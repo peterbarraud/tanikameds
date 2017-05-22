@@ -1,0 +1,41 @@
+<div class="container">
+<div class="jumbotron">
+  <h1 class="display-3">Tanikameds AdminUI</h1>
+  <p class="lead">Login to the Admin UI to perform tasks such as managing products, ailments, categories, etc.
+  </p>
+  <div class="col-6 col-offset-3">
+    <form #productForm="ngForm" (ngSubmit)="loginuser()" >
+      <div class="form-group">
+        <label for="username">User name</label>
+        <input type="email" class="form-control"
+          id="username"
+          name="username"
+          aria-describedby="usernameHelp"
+          placeholder="User name"
+          [(ngModel)]="username"
+          required>
+        <small id="emailHelp" class="form-text text-muted">Enter your loing user name</small>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control"
+          id="password"
+          name="password"
+          placeholder="Password"
+          [(ngModel)]="password"
+          required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+    </form>  
+
+  </div>
+  <hr class="my-4">
+  <div style='font-size:20px;' class="alert alert-danger" role="alert" *ngIf="badlogin()">
+    <p><strong>Incorrect user name or password</strong></p>
+    <p>If you don't current have a login and require one, please contact - ...</p>
+  </div>      
+  <div style='font-size:20px;' class="alert alert-info" role="alert" *ngIf="!badlogin()">
+    <p><strong>If you don't current have a login and require one, please contact - ...</strong></p>
+  </div>      
+</div>  
+</div>

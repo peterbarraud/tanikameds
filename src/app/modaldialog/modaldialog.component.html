@@ -1,0 +1,23 @@
+<template #confirmdelete let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Delete object</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete <span class="font-weight-bold">{{track.name}}</span></p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="onDeleteTrack()">Yes</button>
+    <button type="button" class="btn btn-secondary" (click)="c('Close click')">No</button>
+  </div>
+</template>
+
+<template #deleteTipContents><span class="tooltipContents">Delete <span class="font-weight-bold">{{track.name}}</span></span></template>
+<img (click)="open(confirmdelete)"
+  src="assets/trash.png"
+  style="cursor: pointer;"
+  [ngbTooltip]="deleteTipContents"
+  placement="right"
+  container="body"/>

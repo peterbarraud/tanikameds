@@ -1,0 +1,19 @@
+<template #clearicontip><span class="tooltipContents">Clear <span class="font-weight-bold">(Esc)</span> the selected <span class="font-weight-bold">{{itemtitle}}</span></span></template>
+<template #helptip>
+  <div class="tooltipContents">Start typing or press the <span class="font-weight-bold">down-arrow</span> key to select a <span class="font-weight-bold">{{itemtitle}}</span></div>
+  <div class="tooltipContents">You can type a name that is <span class="font-weight-bold">not</span> in the list and a new <span class="font-weight-bold">{{itemtitle}}</span> will be created in the system</div>
+  <div class="tooltipContents">Press the <span class="font-weight-bold">Esc</span> key to clear the current contents of this field.</div>  
+  <div class="tooltipContents">Press <span class="font-weight-bold">Tab</span> to select the {{itemtitle}} and move to the next field.</div>  
+</template>
+<label>{{itemtitle}}</label>
+<div class="input-group">
+  <span class="input-group-addon clear-icon" id="basic-addon1" (click)="clearitembox()" [ngbTooltip]="clearicontip">x</span>
+  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1"
+    (keyup)="onKey($event)" [attr.list]="itemname" [(ngModel)]="selectedItem"
+    placeholder="Start typing or choose from the list"
+    [ngbPopover]="helptip"
+    triggers="{{showGuidedHelp}}" popoverTitle="Choose item from list" container="body" placement={{helppopupplacement}} required>
+</div>
+<datalist [attr.id]="itemname">
+  <option *ngFor="let item of itemnamelist">{{item}}</option>
+</datalist>

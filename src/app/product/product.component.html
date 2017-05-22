@@ -1,0 +1,134 @@
+<div class="container-fluid">
+  <div class="row" *ngIf="(tracks!==undefined && tracks.length>0) || selectedTrack">
+    <div class="col-4">
+        <app-railroad trackTitle="Product" [tracks]="tracks"
+            (refreshTracks)="getTracks()"
+            (selectTrack)="selectTrack($event)"
+            (emtDeleteTrack)="deleteTrack($event)"
+            (createTrack)="createTrack()" >
+        </app-railroad>
+    </div>
+    <div class="col-8">
+        
+        <form #productForm="ngForm" (ngSubmit)="saveTrack()" (keydown)="keyDownFunction($event)" *ngIf="selectedTrack">
+            <div class="form-group">
+                <label for="productName">Product name</label>
+                <input type="text" class="form-control" id="productName"
+                        aria-describedby="productNameHelp"
+                        placeholder="Product name"
+                        name="name"
+                        #defaultFormElement
+                        [(ngModel)]="selectedTrack.name"
+                        required
+                        >
+                <small id="productNamelHelp" class="form-text text-muted">Enter the name of a new product</small>
+            </div>
+    
+            <div class="form-group">
+                <label for="productDescription">Description</label>
+                <textarea class="form-control" id="productDescription" rows="2"
+                aria-describedby="productDescriptionlHelp"
+                placeholder="Product description"
+                name="description"
+                [(ngModel)]="selectedTrack.description" 
+                triggers="{{showGuidedHelp}}"
+                [ngbPopover]="descriptionhelpcontent"
+                popoverTitle="Name field"
+                placement="left"
+                container="body"
+                ></textarea>            
+                <small id="productDescriptionlHelp" class="form-text text-muted">Enter a brief description for the product</small>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-6">
+                    <!-- selectedItem implements two-way binding according to Thoughtram:
+                        https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html
+                    -->
+                    <app-product-item-select [(selectedItem)]="selectedTrack.manufacturername"
+                            itemname="manufacturer"
+                            itemtitle="Manufacturer"
+                            [itemnamelist]="itemnameslists['manufacturer']"
+                            showGuidedHelp="{{showGuidedHelp}}"
+                            helppopupplacement="left" >
+                    </app-product-item-select>
+                </div>
+                <div class="col-6">
+                    <app-product-item-select [(selectedItem)]="selectedTrack.drugtypename"
+                            itemname="drugtype"
+                            itemtitle="Drug type"
+                            [itemnamelist]="itemnameslists['drugtype']"
+                            showGuidedHelp="{{showGuidedHelp}}"
+                            helppopupplacement="right" >
+                    </app-product-item-select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-6">
+                    <app-product-item-select [(selectedItem)]="selectedTrack.ailmentname"
+                            itemname="ailment"
+                            itemtitle="Ailment"
+                            [itemnamelist]="itemnameslists['ailment']"
+                            showGuidedHelp="{{showGuidedHelp}}"
+                            helppopupplacement="left" >
+                    </app-product-item-select>
+                </div>
+                <div class="col-6">
+                    <app-product-item-select [(selectedItem)]="selectedTrack.categoryname"
+                            itemname="category"
+                            itemtitle="Category"
+                            [itemnamelist]="itemnameslists['category']"
+                            showGuidedHelp="{{showGuidedHelp}}"
+                            helppopupplacement="right" >
+                    </app-product-item-select>
+                </div>
+            </div>
+    
+            <div class="form-group row">
+                <div class="col-6">
+                    <app-product-item-select [(selectedItem)]="selectedTrack.producttypename"
+                            itemname="producttype"
+                            itemtitle="Product type"
+                            [itemnamelist]="itemnameslists['producttype']"
+                            showGuidedHelp="{{showGuidedHelp}}"
+                            helppopupplacement="left" >
+                    </app-product-item-select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-6">
+                    <app-multi-product-item-select [(selectedItem)]="selectedTrack.constituentnames"
+                            itemname="constituent"
+                            itemtitle="Constituent"
+                            [itemnamelist]="itemnameslists['constituent']"
+                            helppopupplacement="left" >
+                    </app-multi-product-item-select>
+                </div>
+                <div class="col-6">
+                    <app-multi-product-item-select [(selectedItem)]="selectedTrack.subconstituentnames"
+                            itemname="subconstituent"
+                            itemtitle="Sub-Constituent"
+                            [itemnamelist]="itemnameslists['subconstituent']"
+                            helppopupplacement="right" >
+                    </app-multi-product-item-select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <div *ngIf="!selectedTrack">
+            <app-no-product-selected noProducts="0" (createTrack)="createTrack(true)"></app-no-product-selected>
+        </div>
+    </div>
+  </div><!-- track row -->
+  <div class="row" *ngIf="(tracks!==undefined && tracks.length===0) && !selectedTrack">
+      <div class="col-12">
+        <app-no-product-selected noProducts="1" (createTrack)="createTrack(true)"></app-no-product-selected>
+      </div>
+  </div>
+</div>
+
+<!--Help tips for the Product guided help-->
+<template #namehelpcontent><p class="help-para">Enter a product name (<span class="text-danger">mandatory</span>) and press the <span class="font-weight-bold">Tab</span> key to move to the next field.</p></template>
+<template #descriptionhelpcontent><p class="help-para">Enter a product description (<span class="text-danger">optional</span>) and press the <span class="font-weight-bold">Tab</span> key to move to the next field.</p></template>

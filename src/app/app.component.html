@@ -1,0 +1,33 @@
+<div class="container">
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded" *ngIf="isValidUser()">
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item">
+        <a [ngClass]="navClass('product')" (click)="gotoRoute('product')">Product</a>
+      </li>
+      <li class="nav-item">
+        <a [ngClass]="navClass('ailment')" (click)="gotoRoute('ailment')">Ailment</a>
+      </li>
+      <li class="nav-item">
+          <a [ngClass]="navClass('category')" (click)="gotoRoute('category')">Category</a>
+      </li>
+      <li class="nav-item">
+          <a [ngClass]="navClass('producttype')" (click)="gotoRoute('producttype')">Product type</a>
+      </li>
+      <li class="nav-item">
+          <a [ngClass]="navClass('drugtype')" (click)="gotoRoute('drugtype')">Drug type</a>
+      </li>
+      <li class="nav-item">
+          <a [ngClass]="navClass('manufacturer')" (click)="gotoRoute('manufacturer')">Manufacturer</a>
+      </li>
+      <li class="nav-item">
+          <a [ngClass]="navClass('appuser')" (click)="gotoRoute('appuser')">User</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <button class="btn btn-outline-success my-2 my-sm-0" (click)="gotoRoute('susi')">Logout</button>
+    </form>
+  </div>
+</nav>    
+<router-outlet></router-outlet>
+</div>

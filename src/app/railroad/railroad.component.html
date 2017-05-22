@@ -1,0 +1,27 @@
+<template ngbModalContainer></template>
+<div>
+  <div class="btn-group" role="group"  style="margin: 5px 0px 5px 0px;">
+    <template #refreshTracksContent><span class="tooltipContents">Refresh the list of <span class="font-weight-bold">{{trackTitle}}s</span> below 
+      <span style="font-size: 20px;font-weight: bold;">&dArr;</span></span>
+    </template>
+    <button type="button" class="btn btn-secondary" (click)="onRefreshTracks()" [ngbTooltip]="refreshTracksContent">Refresh</button>
+    <template #createTrackContent><span class="tooltipContents">Create a new <span class="font-weight-bold">{{trackTitle}}</span></span></template>
+    <button type="button" class="btn btn-secondary" (click)="onCreateTrack()" [ngbTooltip]="createTrackContent" container="body">New {{trackTitle}}</button>
+  </div>
+</div>
+<div class="list-group">
+  <div *ngFor="let track of tracks"
+    type="button"
+    [ngClass]="getTrackStyle(track)"
+    class="row">
+    <template #vieweditTipContents><span class="tooltipContents">View & Edit <span class="font-weight-bold">{{track.name}}</span> details</span></template>
+    <div (click)="onSelectTrack(track)" class="col-10" style="cursor: pointer;" [ngbTooltip]="vieweditTipContents"
+      placement="bottom" container="body">
+      {{track.name}}
+    </div>
+    <div class="col-2">
+      <app-modaldialog [track]="track" (deleteTrack)="deleteTrack($event)"></app-modaldialog>
+    </div>
+    
+  </div>
+</div>

@@ -1,0 +1,7 @@
+.itemtitle {
+    cursor: pointer;
+    margin-right:3px;
+    font-size:13px;
+    border: 1px solid #000000;
+    font-weight: bold;
+}

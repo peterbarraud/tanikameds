@@ -1,0 +1,90 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-4">
+      <app-railroad trackTitle="Applicaiton user" [tracks]="tracks"
+            (refreshTracks)="getTracks()"
+            (selectTrack)="selectTrack($event)"
+            (emtDeleteTrack)="deleteTrack($event)"
+            (createTrack)="createTrack()" ></app-railroad>
+    </div>
+    <div class="col-8">
+        <form #appuserForm="ngForm" (ngSubmit)="saveTrack()" *ngIf="selectedTrack">
+            <div class="form-group">
+                <label for="fullName">Full name</label>
+                <input type="text" class="form-control" id="fullName"
+                        aria-describedby="fullNamelHelp"
+                        placeholder="Full name"
+                        name="name"
+                        [(ngModel)]="selectedTrack.name"
+                        #defaultFormElement
+                        required >
+                <small id="fullNamelHelp" class="form-text text-muted">Enter the full name of a new Application user</small>
+            </div>
+            <div class="form-group">
+                <label for="fullName">User name</label>
+                <input type="email" class="form-control" id="fullName"
+                        aria-describedby="fullNamelHelp"
+                        placeholder="User name (must in email format)"
+                        name="username"
+                        [(ngModel)]="selectedTrack.username"
+                        required >
+                <small id="fullNamelHelp" class="form-text text-muted">Enter the user name of a new Application user</small>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password"
+                                aria-describedby="passwordlHelp"
+                                placeholder="Password"
+                                name="password"
+                                [readonly]='!ChangePassword'
+                                [(ngModel)]="selectedTrack.password"
+                                required >
+                    </div>
+                    <div class="col-6">
+                        <label *ngIf="ChangePassword" for="confirmpassword">Confirm password</label>
+                        <input *ngIf="ChangePassword" type="password" class="form-control" id="confirmpassword"
+                                aria-describedby="confirmpasswordHelp"
+                                placeholder="Confirm password"
+                                name="confirmpassword"
+                                [(ngModel)]="confirmpassword"
+                                required >
+                    </div>
+                </div>
+                <small id="passwordHelp" class="form-text text-muted">Enter the password of a new Application user</small>
+                <ngb-alert [dismissible]="false" type="danger" *ngIf="passwordsdontmatch">
+                Your password and Confirm passwords don't match 
+                </ngb-alert>                
+                <button *ngIf="!ChangePassword" class="btn btn-primary btn-sm" (click)="OnChangePassword()">Change password</button>
+                <button *ngIf="CancelChangePassword" class="btn btn-primary btn-sm" (click)="OnCancelChangePassword()">Cancel change password</button>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <div *ngIf="!selectedTrack">
+            <app-notrackselected noTracks="0" trackTitle="Application user" (createTrack)="createTrack()"></app-notrackselected>
+        </div>
+    </div>
+  </div><!-- track row -->
+  <div class="row" *ngIf="tracks!==undefined && tracks.length===0">
+      <div class="col-12">
+        <app-notrackselected noTracks="1" trackTitle="Application user" (createTrack)="createTrack()"></app-notrackselected>
+      </div>
+  </div>
+</div>
+
+<template #cannotDeleteLastUser let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Cannot Delete</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>You cannot delete the <span class="font-weight-bold">last user</span> in the System.</p>
+    <p>If you do, there will be no way to log into the System</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="c('Close click')">OK</button>
+  </div>
+</template>

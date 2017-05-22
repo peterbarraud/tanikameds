@@ -1,0 +1,43 @@
+<div class="jumbotron" style="margin-top:5px;">
+  <div class="row" *ngIf="noProducts==='0'">
+    <div class="col-1">
+      <div class="left-pointer">&lArr;</div>
+      <div class="left-pointer">&lArr;</div>
+      <div class="left-pointer">&lArr;</div>
+      <div class="left-pointer">&lArr;</div>
+    </div>
+    <div class="col-10">
+      <h3>Working with Producs</h3>
+      <p class="lead" style="margin-top: 14px;">
+          <span>Click on a <span class="font-weight-bold">Product</span> on the left rail to view / edit the details</span>
+          <span class="lead text-danger font-weight-bold"
+            style="font-size:24px;">**Please read if you have not created Producs before:</span>
+      </p>
+        <p style="font-size: 20px;">
+          If you have not created Products before, we highly recommend that you click the New Product button below and we'll guide you throw the process.
+        </p>
+      <p class="lead">
+          <template #createProductContent><span class="tooltipContents">Create a new <span class="font-weight-bold">Product</span></span></template>
+          <button type="button" class="btn btn-success btn-lg"
+            [ngbTooltip]="createProductContent"
+            (click)="onCreateTrack()">New Product</button>
+        </p>
+    </div>
+  </div>
+  <div class="row" *ngIf="noProducts==='1'">
+    <div class="col-12">
+      <h3>Working with Products</h3>
+      <p class="lead">
+          There are currently no Products in your system.
+      </p>
+      <p>To get started, click <span class="font-weight-bold">New Product</span> button below and we'll guide you throw the process.</p>
+      <p class="lead">
+          <template #createTrackContent><span class="tooltipContents">Create a new <span class="font-weight-bold">Products</span></span></template>
+          <button type="button" class="btn btn-success btn-lg"
+            [ngbTooltip]="createProductContent"
+            (click)="onCreateTrack()">New Products</button>
+        </p>
+    </div>
+  </div>
+  
+</div>

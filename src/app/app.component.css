@@ -1,0 +1,13 @@
+.nav-item {
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 0px 2px 0px 2px;
+}
+.nav-item-active {
+    background-color: #ddd9d9;
+    cursor: no-drop;
+}
+.nav-item:hover{
+    background-color: #ddd9d9;
+}
