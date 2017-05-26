@@ -181,6 +181,12 @@ final class DataLayer {
     $this->conn->query($execute_sql);
     
   }
+  public function SaveVendorProductPrice($productid, $productprice, $vendorid){
+		file_put_contents('prod-price-in-datalayer.log',"$productid :- $productprice :- $vendorid", FILE_APPEND);
+    // INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE  name="A", age=19
+    // $execute_sql = 'delete from ' . get_class($object) . ' where id = ' . $object->id;
+    
+  }
   // public function GetParentProductIDs($object){
   //   $productids = array();
   //   $execute_sql = 'select id from product where ' . get_class($object) . 'id = ' . $object->id;

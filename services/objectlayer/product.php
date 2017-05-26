@@ -72,6 +72,9 @@ class product extends objectbase {
         sort($subconstituentids);  
         $product->subconstituentids = join('|', $subconstituentids);
         $dataLayer->Save($product, TRUE);
+        // after saving the product now we save the product price by vendor
+        $dataLayer->SaveVendorProductPrice($product->id, $this->productprice, $this->vendorid);
+        
     }
     private static function get_object_id($classname, $objectname, $dataLayer){
         $retval = $dataLayer->GetIdByFieldName($classname, 'name', $objectname);

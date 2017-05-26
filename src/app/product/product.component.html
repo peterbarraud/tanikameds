@@ -129,6 +129,8 @@
   </div>
 </div>
 
+<app-valor-table [tableData]="tracks" (clickcell)="onClickTableCell($event)"></app-valor-table>
+
 <!--Help tips for the Product guided help-->
 <template #namehelpcontent><p class="help-para">Enter a product name (<span class="text-danger">mandatory</span>) and press the <span class="font-weight-bold">Tab</span> key to move to the next field.</p></template>
 <template #descriptionhelpcontent><p class="help-para">Enter a product description (<span class="text-danger">optional</span>) and press the <span class="font-weight-bold">Tab</span> key to move to the next field.</p></template>

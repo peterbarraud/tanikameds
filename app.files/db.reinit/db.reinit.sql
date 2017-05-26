@@ -135,6 +135,17 @@ create table if not exists product
 	primary key(id)
 );
 
+drop table if exists vendorproductprice;
+create table if not exists vendorproductprice (
+	id int unsigned NOT NULL AUTO_INCREMENT,
+	vendorid tinyint unsigned NOT NULL,
+	productid int unsigned NOT NULL,
+	price decimal(10,2) NOT NULL,
+	FOREIGN KEY (`productid`) REFERENCES `product` (`id`),
+	FOREIGN KEY (`productid`) REFERENCES `product` (`id`),
+	primary key(id)
+);
+
 insert into appuser (name, username, password, defaultroute, showproducthelpdialog) values('Monika Agarwal', 'monikaa75@gmail.com', 'admin', 'product', 1);
 insert into category (name) values ('Dietary supplements'),('Baby care'),('Women care'),('Drug');
 insert into ailment (name) values ('Antibiotic'),('Antiviral');
@@ -143,8 +154,6 @@ insert into manufacturer (name,address,email) values ('GlaxoSmithKline','Address
 insert into drugtype (name) values ('OTC'),('Prescribed');
 insert into constituent (name) values ('Amoxicillin 500mg'),('Amoxicillin 400mg'),('Clavunic Acid 125mg'),('Clavunic Acid 57.8mg');
 insert into subconstituent (name) values ('Lactobacillus');
-insert into product (name, description, manufacturerid, typeid, ailmentid, categoryid, drugtypeid) values('p1', 'p1 description', 1, 1, 1, 1, 1);
-insert into productconstituent (productid, constituentid) values(1, 1), (1, 2), (1, 3);  
-insert into productsubconstituent (productid, subconstituentid) values(1, 3), (1, 4), (1, 4);  
+-- To insert product records, run the XLS Macro
 SET FOREIGN_KEY_CHECKS=1;
 

@@ -12,20 +12,7 @@
 
 	$app->get('/validateuser/:username/:password/', 'getappuser');
 	function getappuser($username, $password) {
-		require_once('objectlayer/appusercollection.php');
-		$filter = array();
-		$filter['username'] = $username;
-		$filter['password'] = $password;
-		$appusers = new appusercollection($filter);
-		$retval = array();
-		// since the appuser table has a unique constraint on the username field, we'll get one or no app user
-		if ($appusers->length == 1){
-			$retval['user'] = $appusers->items[0];
-			$retval['invaliduser'] = 0;
-		}
-		else {
-			$retval['invaliduser'] = 1;
-		}
+		$retval = validate_user($username, $password);
 		allow_cross_domain_calls();
 		echo json_encode($retval);
 	}
@@ -127,28 +114,45 @@
 		echo json_encode($retval);
 	}
 
-	$app->post('/saveproduct/', 'saveproduct');
-	function saveproduct(){
+	$app->post('/saveproducts/:username/:password/', 'saveproducts');
+	function saveproducts($username, $password){
+		$validated_user_info = validate_user($username, $password);
 		$retval = array();
-		$no_err_products = array();
-		$err_products = array();
-		$app = new Slim();
-		require_once('objectlayer/product.php');
-		$products_json = json_decode($app->request()->getBody());
-		foreach($products_json as $product_json) {
-			try {
-				$product = GetObjectForJSON($product_json, 'product');
-				$product->id = null;
-				$product->description = null;
-				$product->Save();
-				array_push($no_err_products, $product->name);
+		if ($validated_user_info['invaliduser'] == 0){
+			require_once('objectlayer/product.php');
+			require_once('objectlayer/productcollection.php');
+			$no_err_products = array();
+			$err_products = array();
+			$app = new Slim();
+			$products_json = json_decode($app->request()->getBody());
+			foreach($products_json as $product_json) {
+				try {
+					$product = GetObjectForJSON($product_json, 'product');
+					if (strtoupper(substr($product->productdelete,0,1)) == "Y"){
+						$productstodelete = new productcollection(array("name"=>$product->name));
+						if ($productstodelete->length == 1){
+							$productstodelete->items[0]->Delete();
+						}
+					}
+					else {
+						$product->id = null;
+						$product->description = null;
+						$product->vendorid = $validated_user_info['user']->id;
+						$product->Save();
+						array_push($no_err_products, $product->name);
+					}
+				}
+				catch (Exception $e) {
+					array_push($err_products, $product->name);
+				}
 			}
-			catch (Exception $e) {
-				array_push($err_products, $product->name);
-			}
+			$retval['no-err-products'] = $no_err_products;
+			$retval['err-products'] = $err_products;
+			$retval['invaliduser'] = 0;
 		}
-		$retval['no-err-products'] = $no_err_products;
-		$retval['err-products'] = $err_products;
+		else {
+			$retval['invaliduser'] = 1;
+		}
 		echo json_encode($retval);
 	}
 	
@@ -253,5 +257,22 @@ function allow_cross_domain_calls() {
     }
 
     //echo "You have CORS!";
+}
+function validate_user($username, $password){
+	require_once('objectlayer/appusercollection.php');
+	$filter = array();
+	$filter['username'] = $username;
+	$filter['password'] = $password;
+	$appusers = new appusercollection($filter);
+	$retval = array();
+	// since the appuser table has a unique constraint on the username field, we'll get one or no app user
+	if ($appusers->length == 1){
+		$retval['user'] = $appusers->items[0];
+		$retval['invaliduser'] = 0;
+	}
+	else {
+		$retval['invaliduser'] = 1;
+	}
+	return $retval;
 }
 ?>

@@ -6,6 +6,10 @@ import { HttpModule } from '@angular/http';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { Routes, RouterModule } from '@angular/router';
 
+import { PaginationModule, PaginationConfig } from 'ngx-bootstrap/ng2-bootstrap';
+import { TabsModule } from 'ngx-bootstrap/ng2-bootstrap';
+import { Ng2TableModule } from 'ng2-table/ng2-table';
+
 
 // custom components
 import { AppComponent } from './app.component';
@@ -32,6 +36,7 @@ import { AppUserService } from './app-user.service';
 import { NoProductSelectedComponent } from './no-product-selected/no-product-selected.component';
 
 import { FilterProductItemsPipe } from './filterproductitems.pipe';
+import { ValorTableComponent } from './valor-table/valor-table.component';
 
 @NgModule({
   declarations: [
@@ -51,13 +56,17 @@ import { FilterProductItemsPipe } from './filterproductitems.pipe';
     MultiItemGroupComponent,
     AppUserComponent,
     NoProductSelectedComponent,
-    FilterProductItemsPipe
+    FilterProductItemsPipe,
+    ValorTableComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     NgbModule.forRoot(),
+    PaginationModule,
+    TabsModule,
+    Ng2TableModule,
     // NgbActiveModal,
     RouterModule.forRoot([
       {
@@ -101,7 +110,8 @@ import { FilterProductItemsPipe } from './filterproductitems.pipe';
   ],
   providers: [
     RestService,
-    AppUserService
+    AppUserService,
+    PaginationConfig
     
   ],
   bootstrap: [AppComponent]
