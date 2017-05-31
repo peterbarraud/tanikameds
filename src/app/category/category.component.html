@@ -31,12 +31,12 @@
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
-        <div *ngIf="!selectedTrack">
+        <div *ngIf="this.tracks!==undefined && this.tracks.length>0 && !this.selectedTrack">
             <app-notrackselected noTracks="0" trackTitle="Category" (createTrack)="createTrack()"></app-notrackselected>
         </div>
     </div>
   </div><!-- track row -->
-  <div class="row" *ngIf="tracks!==undefined && tracks.length===0">
+  <div class="row" *ngIf="this.tracks!==undefined && this.tracks.length===0 && !this.selectedTrack">
       <div class="col-12">
         <app-notrackselected noTracks="1" trackTitle="Category" (createTrack)="createTrack()"></app-notrackselected>
       </div>

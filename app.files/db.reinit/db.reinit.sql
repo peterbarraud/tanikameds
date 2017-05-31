@@ -8,7 +8,20 @@ create table if not exists appuser (
 	password varchar (50),
 	defaultroute varchar(20),
 	showproducthelpdialog char(1),
-	CONSTRAINT unique_username UNIQUE (username),
+	mobilenumber varchar(20),
+	addressone varchar(100),
+	addresstwo varchar(100),
+	cityname varchar(30),
+	pincode varchar(10),
+	statename varchar(30),
+	locationlatitude float(10, 6),
+	locationlongitude float(10, 6),
+	-- Possible values: admin, vendor
+	userclassname char(10),
+	-- Boolean 1: True; 0: False
+	canaddproduct char(1),
+	candeleteproduct char(1),
+	canmanageuser char(1),
 	primary key(id)
 );
 drop table if exists category;
@@ -146,7 +159,7 @@ create table if not exists vendorproductprice (
 	primary key(id)
 );
 
-insert into appuser (name, username, password, defaultroute, showproducthelpdialog) values('Monika Agarwal', 'monikaa75@gmail.com', 'admin', 'product', 1);
+insert into appuser (name, username, password, defaultroute, showproducthelpdialog, userclassname) values('Monika Agarwal', 'monikaa75@gmail.com', 'admin', 'vendor', 1, 'admin');
 insert into category (name) values ('Dietary supplements'),('Baby care'),('Women care'),('Drug');
 insert into ailment (name) values ('Antibiotic'),('Antiviral');
 insert into producttype (name) values ('Tablet'),('Capsule'),('Syrup');

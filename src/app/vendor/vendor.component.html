@@ -1,0 +1,86 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-4">
+      <app-railroad trackTitle="Vendor" [tracks]="tracks"
+            (refreshTracks)="getTracks()"
+            (selectTrack)="selectTrack($event)"
+            (emtDeleteTrack)="deleteTrack($event)"
+            (createTrack)="createTrack()"
+             ></app-railroad>
+    </div>
+    <div class="col-4">
+        <form #vendorForm="ngForm" (ngSubmit)="saveTrack()" *ngIf="selectedTrack">
+            <div class="form-group">
+                <label for="vendorName">vendor name</label>
+                <input type="text" class="form-control" id="ailmentName"
+                        aria-describedby="ailmentNamelHelp"
+                        placeholder="Vendor name"
+                        name="name"
+                        [(ngModel)]="selectedTrack.name"
+                        #defaultFormElement
+                        required >
+                <small id="ailmentNamelHelp" class="form-text text-muted">Enter the name of a new vendor</small>
+            </div>
+            <div class="form-group">
+                <label for="ailmentDescription">Description</label>
+                <textarea class="form-control" id="ailmentDescription" rows="2"
+                aria-describedby="ailmentDescriptionlHelp"
+                placeholder="Vendor description"
+                name="description"
+                [(ngModel)]="selectedTrack.description" ></textarea>
+                <small id="ailmentDescriptionlHelp" class="form-text text-muted">Enter a brief description for the vendor</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <!-- The following div displays when a user just got to the vendors page-->
+        <div *ngIf="this.tracks!==undefined && this.tracks.length>0 && !this.selectedTrack">
+            <app-notrackselected noTracks="0" trackTitle="Vendor" (createTrack)="createTrack()"></app-notrackselected>
+        </div>
+
+    </div>
+    <div class="col-4">
+        abc
+    </div>
+  </div><!-- track row -->
+  <div class="row" *ngIf="this.tracks!==undefined && this.tracks.length===0 && !this.selectedTrack">
+      <div class="col-12">
+        <app-notrackselected noTracks="1" trackTitle="Vendor" (createTrack)="createTrack()"></app-notrackselected>
+      </div>
+  </div>
+</div>
+
+<!--TODO: Is there a way to put this into another file and then reference it.
+Right now we have to put this into each of the object HTML files -->
+<template #cannotDelete let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Cannot Delete</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>You cannot delete <span class="font-weight-bold">{{cannotDeleteObjectName}}</span> because it's being used in one or more <span class="font-weight-bold">products</span>.</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="c('Close click')">OK</button>
+  </div>
+</template>
+
+<template #cannotCreateVendor let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Cannot create Vendors</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>Vendors need to register their details.</p>
+    <p>To do that, go to the <a href=".">login screen</a> and then click <strong>Register</strong></p>          
+    <p>You use this page to assign a new Vendor a password</p>
+    <p>Also, use this page to manage vendor permissions</p>
+    <p>To manage vendor permissions, <strong>Close</strong> this dialog and click a vendor name in the left rail</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="c('Close click')">Close</button>
+  </div>
+</template>

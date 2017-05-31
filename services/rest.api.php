@@ -188,8 +188,8 @@
 		}
 		else {
 			$retval['lastuser'] = 0;
-			require_once('objectlayer/appuser.php');
-			$user = new appuser($id);
+			require_once('objectlayer/admin.php');
+			$user = new admin($id);
 			$user->Delete();
 			$retval['updatedcollection'] = $appusercollection;
 		}

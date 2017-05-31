@@ -20,25 +20,6 @@ class objectbase {
         ob_start();
         var_dump($this);
         return ob_get_clean(); 
-        // TODO: Check if this functionality works on the public server. If, then remove the following commented out portion
-        // file_put_contents('var-dump.log', $result);
-        // foreach ($this as $key => $value) {
-        //     if (is_object($value)){
-        //         file_put_contents('tostring.log', "$key is object\n");
-        //     }
-        //     if (is_array($value)){
-        //         file_put_contents('tostring.log', "$key\n", FILE_APPEND);
-        //         foreach ($value as $key => $arrayvalue) {
-        //             file_put_contents('tostring.log', "$key => $arrayvalue\n", FILE_APPEND);
-        //         }
-        //     }
-        //     else {
-        //         file_put_contents('tostring.log', "$key => $value\n", FILE_APPEND);
-        //         $retval .= "$key => $value\n";
-        //     }
-        // }        
-        // file_put_contents('tostring.log', "====================\n", FILE_APPEND);
-        // return $retval;
     }
 }
 

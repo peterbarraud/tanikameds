@@ -7,6 +7,7 @@ CALL:getappdata
 
 REM Re-execute the main db.sql
 %mariadbpath% --port=%port% --user=root --password= --database=%dbname% < db.reinit.sql
+%mariadbpath% --port=%port% --user=root --password= --database=%dbname% < citystate.sql
 
 call %commonfolderpath%alldone.bat endprompt
 

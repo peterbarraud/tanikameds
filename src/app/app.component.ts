@@ -10,9 +10,7 @@ import { AppUserService } from './app-user.service';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private router: Router, private appUserService:AppUserService){
-    
-  }  
+  constructor(private router: Router, private appUserService:AppUserService){}  
   // Mostly we use ngOnInit for all the initialization/declaration and avoid stuff to work in the constructor.
   // The constructor should only be used to initialize class members but shouldn't do actual "work".
   // http://stackoverflow.com/questions/35763730/difference-between-constructor-and-ngoninit  

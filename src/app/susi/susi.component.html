@@ -35,7 +35,8 @@
     <p>If you don't current have a login and require one, please contact - ...</p>
   </div>      
   <div style='font-size:20px;' class="alert alert-info" role="alert" *ngIf="!badlogin()">
-    <p><strong>If you don't current have a login and require one, please contact - ...</strong></p>
+    <p><strong>If you don't current have a login and require one, </strong><button class="btn btn-primary btn-sm" (click)="gotoRegistrationForm()">Register</button> now</p>
+    
   </div>      
 </div>  
 </div>

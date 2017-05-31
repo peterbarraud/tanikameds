@@ -1,5 +1,7 @@
 <?php
 require_once('objectcollectionbase.php');
-class appusercollection extends objectcollectionbase {}
+class appusercollection extends objectcollectionbase {
+    
+}
 
 ?>

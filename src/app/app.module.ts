@@ -26,8 +26,7 @@ import { ModaldialogComponent } from './modaldialog/modaldialog.component';
 import { ProductItemSelectComponent } from './productitemselect/productitemselect.component';
 import { MultiProductItemsSlectComponent } from './multiproductitemselect/multiproductitemselect.component';
 import { MultiItemGroupComponent } from './multiitemgroup/multiitemgroup.component';
-import { AppUserComponent } from './app-user/app-user.component';
-
+import { AdminUserComponent } from './admin-user/admin-user.component';
 
 // custom services
 import { RestService } from './rest.service';
@@ -37,6 +36,8 @@ import { NoProductSelectedComponent } from './no-product-selected/no-product-sel
 
 import { FilterProductItemsPipe } from './filterproductitems.pipe';
 import { ValorTableComponent } from './valor-table/valor-table.component';
+import { RegistrationFormComponent } from './registration-form/registration-form.component';
+import { VendorComponent } from './vendor/vendor.component';
 
 @NgModule({
   declarations: [
@@ -54,10 +55,12 @@ import { ValorTableComponent } from './valor-table/valor-table.component';
     ProductItemSelectComponent,
     MultiProductItemsSlectComponent,
     MultiItemGroupComponent,
-    AppUserComponent,
+    AdminUserComponent,
     NoProductSelectedComponent,
     FilterProductItemsPipe,
     ValorTableComponent,
+    RegistrationFormComponent,
+    VendorComponent,
   ],
   imports: [
     BrowserModule,
@@ -102,8 +105,16 @@ import { ValorTableComponent } from './valor-table/valor-table.component';
         component: ManufacturerComponent,
       },
       {
-        path: 'appuser', 
-        component: AppUserComponent,
+        path: 'adminuser', 
+        component: AdminUserComponent,
+      },
+      {
+        path: 'vendor', 
+        component: VendorComponent,
+      },
+      {
+        path: 'register', 
+        component: RegistrationFormComponent,
       },
     ]
     )

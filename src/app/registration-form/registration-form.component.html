@@ -1,0 +1,40 @@
+<div class="container-fluid">
+  <div class="jumbotron">
+  <h1 class="display-3">Register for Tanikameds</h1>
+    <div class="row">
+      <div class="col-6 offset-col3">
+          <form #ailmentForm="ngForm" (ngSubmit)="registerChemist()" [hidden]="registerdone">
+              <div class="form-group">
+                  <label>Chemist details</label>
+                  <div style="margin-bottom: 3px;"><input type="text" #shopnamefield class="form-control" aria-describedby="ailmentNamelHelp" placeholder="Chemist shop name" required ></div>
+                  <div style="margin-bottom: 3px;"><input type="email" #emailfield class="form-control" aria-describedby="ailmentNamelHelp" placeholder="Email address" required ></div>
+                  <div style="margin-bottom: 3px;"><input type="text" #mobilefield class="form-control" aria-describedby="ailmentNamelHelp" placeholder="Mobile number" required ></div>
+              </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <div style="margin-bottom: 3px;"><input type="text" #addressone class="form-control" aria-describedby="ailmentNamelHelp" placeholder="Shop Number" required ></div>
+                    <div style="margin-bottom: 3px;"><input type="text" #addresstwo class="form-control" aria-describedby="ailmentNamelHelp" placeholder="Street" required ></div>
+                    <div style="margin-bottom: 3px;"><input id="typeahead-format" type="text" #statefield class="form-control"
+                          [ngbTypeahead]="searchStates" [resultFormatter]="formatter" placeholder="Choose State" (blur)="get_state_cities(statefield)" [disabled]="!citystatedatagot" required /></div>
+                    <div style="margin-bottom: 3px;"><input id="typeahead-format" type="text" #cityfield class="form-control"
+                          [ngbTypeahead]="searchCities" [resultFormatter]="formatter" placeholder="Choose City" (blur)="get_city_pincodes(statefield, cityfield)" [disabled]="!citystatedatagot" required/></div>
+                    <div style="margin-bottom: 3px;"><input id="typeahead-format" type="text" #pincodefield class="form-control"
+                          [ngbTypeahead]="searchPinCodes" [resultFormatter]="formatter" placeholder="Choose Pincode" [disabled]="!citystatedatagot" required /></div>
+                </div>
+              <button type="submit" class="btn btn-primary">Register now</button>
+          </form>
+          <div [hidden]="!registerdone">
+            <hr class="my-4">
+            <div style='font-size:20px;' class="alert alert-success" role="alert">
+              <p><strong>Registration Done!!</strong></p>
+              <p>We will send you an email shortly with the details to get started.</p>
+              <button class="btn btn-primary" (click)="registeranotherchemist()">Register another Chemist</button>
+              <p>After you have received the registration email, <a href=".">Login</a> to the App</p>
+            </div>
+          </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>

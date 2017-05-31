@@ -18,6 +18,10 @@ export class SusiComponent {
    loginuser(){
      this.appUserService.ValidateUser(this.username, this.password, this.router);
    }
+    gotoRegistrationForm () {
+      this.appUserService.NavigateUser(this.router, 'register');
+    }
+   
    badlogin():Boolean {
      return this.appUserService.BadLogin;
    }
