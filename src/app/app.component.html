@@ -5,25 +5,25 @@
       <li class="nav-item">
         <a [ngClass]="navClass('product')" (click)="gotoRoute('product')">Product</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isAdminUser()">
         <a [ngClass]="navClass('ailment')" (click)="gotoRoute('ailment')">Ailment</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isAdminUser()">
           <a [ngClass]="navClass('category')" (click)="gotoRoute('category')">Category</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isAdminUser()">
           <a [ngClass]="navClass('producttype')" (click)="gotoRoute('producttype')">Product type</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isAdminUser()">
           <a [ngClass]="navClass('drugtype')" (click)="gotoRoute('drugtype')">Drug type</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isAdminUser()">
           <a [ngClass]="navClass('manufacturer')" (click)="gotoRoute('manufacturer')">Manufacturer</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isAdminUser()">
           <a [ngClass]="navClass('adminuser')" (click)="gotoRoute('adminuser')">Admins</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isAdminUser()">
           <a [ngClass]="navClass('vendor')" (click)="gotoRoute('vendor')">Vendors</a>
       </li>
     </ul>

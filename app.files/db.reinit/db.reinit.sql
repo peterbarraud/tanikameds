@@ -5,6 +5,7 @@ create table if not exists appuser (
 	id tinyint unsigned NOT NULL AUTO_INCREMENT,
 	name varchar(256),
 	username varchar (50),
+	email varchar(100),
 	password varchar (50),
 	defaultroute varchar(20),
 	showproducthelpdialog char(1),
@@ -159,7 +160,11 @@ create table if not exists vendorproductprice (
 	primary key(id)
 );
 
-insert into appuser (name, username, password, defaultroute, showproducthelpdialog, userclassname) values('Monika Agarwal', 'monikaa75@gmail.com', 'admin', 'vendor', 1, 'admin');
+insert into appuser (name, username, email, password, defaultroute, userclassname) values ('Monika Aggarwal', 'monikaa75@gmail.com', 'monikaa75@gmail.com', 'admin', 'vendor', 'admin');
+insert into appuser(name, username, email, password, defaultroute, showproducthelpdialog, mobilenumber, addressone, addresstwo, cityname, pincode, statename, locationlatitude, locationlongitude, userclassname, canaddproduct, candeleteproduct, canmanageuser) values
+("v1", "gapeterb@gmail.com", "", "", "", "", "09810734454", "101", "A-101, Saffron Block, Niho Scottish Gardens", "FARRUKHABAD", "209601", "UTTAR PRADESH", "", "", "vendor", "", "", ""),
+("v2", "peterbarraud@yahoo.com", "", "", "", "", "09810734454", "101", "A-101, Saffron Block, Niho Scottish Gardens", "FARRUKHABAD", "209601", "UTTAR PRADESH", "", "", "vendor", "", "", ""),
+("v9", "barraud@adobe.com", "", "", "", "", "09810734454", "101", "A-101, Saffron Block, Niho Scottish Gardens", "FARRUKHABAD", "209601", "UTTAR PRADESH", "", "", "vendor", "", "", "");
 insert into category (name) values ('Dietary supplements'),('Baby care'),('Women care'),('Drug');
 insert into ailment (name) values ('Antibiotic'),('Antiviral');
 insert into producttype (name) values ('Tablet'),('Capsule'),('Syrup');

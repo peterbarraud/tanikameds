@@ -10,6 +10,15 @@
 	//we can then also (brilliant, this one) make full use of db transactions - we can do a full commit / rollback of everything that happened for the duration of the API
 
 
+	// create a test rest to try out stuff before we push it through
+	$app->get('/justtotest/', 'justtotest');
+	function justtotest() {
+		require_once('logger.php');
+        $logger = new logger();
+        $logger->println('here at lesat');
+		print(0);
+	}
+	
 	$app->get('/validateuser/:username/:password/', 'getappuser');
 	function getappuser($username, $password) {
 		$retval = validate_user($username, $password);
@@ -35,20 +44,20 @@
 		echo json_encode($object);
 	}
 
-	$app->get('/getnewproductdetails/', 'getnewproductdetails');
-	function getnewproductdetails() {
+	$app->get('/getnewproductdetails/:vendorid/', 'getnewproductdetails');
+	function getnewproductdetails($vendorid) {
 		require_once('objectlayer/product.php');
 		$product = new product();
-		$product->SetProductDetails();
+		$product->SetProductDetails($vendorid);
 		allow_cross_domain_calls();
 		echo json_encode($product);
 	}
 
-	$app->get('/getproductdetails/:id/', 'getproductdetails');
-	function getproductdetails($id) {
+	$app->get('/getproductdetails/:productid/:vendorid/', 'getproductdetails');
+	function getproductdetails($productid, $vendorid) {
 		require_once('objectlayer/product.php');
-		$product = new product($id);
-		$product->SetProductDetails();
+		$product = new product($productid);
+		$product->SetProductDetails($vendorid);
 		allow_cross_domain_calls();
 		echo json_encode($product);
 	}
@@ -72,7 +81,7 @@
 				}
 			}
 		}
-		$product->SetProductDetails();
+		$product->SetProductDetails($vendorid);
 		$retval['product'] = $product;
 		allow_cross_domain_calls();
 		echo json_encode($retval);
@@ -116,6 +125,8 @@
 
 	$app->post('/saveproducts/:username/:password/', 'saveproducts');
 	function saveproducts($username, $password){
+		require_once('logger.php');
+        $logger = new logger();
 		$validated_user_info = validate_user($username, $password);
 		$retval = array();
 		if ($validated_user_info['invaliduser'] == 0){
@@ -128,21 +139,40 @@
 			foreach($products_json as $product_json) {
 				try {
 					$product = GetObjectForJSON($product_json, 'product');
+					$logger->println($product->productprice);
+					// check if this is a DELETE row
 					if (strtoupper(substr($product->productdelete,0,1)) == "Y"){
-						$productstodelete = new productcollection(array("name"=>$product->name));
-						if ($productstodelete->length == 1){
-							$productstodelete->items[0]->Delete();
+						// but also check if this user has permissions to delete
+						if ($validated_user_info['user']->candeleteproduct){
+							$productstodelete = new productcollection(array("name"=>$product->name));
+							if ($productstodelete->length == 1){
+								$productstodelete->items[0]->Delete();
+							}
+						}						
+					}
+					// else we'll insert or update
+					else {
+						// but only if this user can update
+						if ($validated_user_info['user']->canaddproduct){
+							$product->id = null;
+							$product->description = null;
+							$product->vendorid = $validated_user_info['user']->id;
+							$product->Save();
+							array_push($no_err_products, $product->name);
 						}
 					}
-					else {
-						$product->id = null;
-						$product->description = null;
-						$product->vendorid = $validated_user_info['user']->id;
-						$product->Save();
-						array_push($no_err_products, $product->name);
+					if (!$validated_user_info['user']->canaddproduct){
+						$logger->println("good so far");
 					}
+					// $productsforpriceupdate = new productcollection(array("name"=>$product->name));
+					// if ($productsforpriceupdate->length == 1){
+					// 	$updatepriceproduct = $productsforpriceupdate->items[0];
+					// 	$updatepriceproduct->vendorid = $validated_user_info['user']->id;
+					// 	$updatepriceproduct->SaveVendorProductPrice();
+					// }
 				}
 				catch (Exception $e) {
+					$logger->println($e);
 					array_push($err_products, $product->name);
 				}
 			}
@@ -215,6 +245,18 @@
 		$keywords = productcollection::GetKeywords();
 		allow_cross_domain_calls();
 		echo json_encode($keywords);
+	}
+
+	$app->get('/getusernames/', 'getusernames');
+	function getusernames() {
+		require_once('objectlayer/appusercollection.php');
+		$appusercollection = new appusercollection();
+		$usernames = array();
+		foreach ($appusercollection->items as $appuser){
+			array_push($usernames, $appuser->username);
+		}
+		allow_cross_domain_calls();
+		echo json_encode($usernames);
 	}
 
 	$app->run();

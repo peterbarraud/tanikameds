@@ -27,15 +27,16 @@ export class ProductComponent extends ComponentBase implements OnInit{
 
   // override base function since we need to call the specific getProductDetails rest service 
   selectTrack(track) {
-        this.restService.getProductDetails(track.id)
+        this.restService.getProductDetails(track.id, this.appuserService.UserId)
         .subscribe(retval =>{
           this.selectedTrack = retval;
           this.setDefaultFocus();
           this.showGuidedHelp = "";
+          console.log(this.selectedTrack);
         });
   }
   createTrack(isguided=false){
-      this.restService.newProduct()
+      this.restService.newProduct(this.appuserService.UserId)
       .subscribe(retval =>{
           this.selectedTrack = retval;
           this.setDefaultFocus();

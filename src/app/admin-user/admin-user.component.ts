@@ -12,14 +12,28 @@ export class AdminUserComponent extends ComponentBase implements OnInit {
   public confirmpassword:string;
   public passwordsdontmatch:Boolean;
   private _isnewuser:Boolean;
+  private currentUserNameList:any;
+  private invalidUserName:Boolean;
+  private invalidUserNameMsg:string;
+  private thisVeryUserName:string;
 
   @ViewChild('cannotDeleteLastUser') cannotDeleteLastUser:ElementRef;
+  @ViewChild('usernamefield') usernamefield:ElementRef;
+  
 
   ngOnInit() {
     this._changepassword = false;
     this.passwordsdontmatch = false;
     this.componentName = 'admin';
     this.getTracks();
+    this.getUserNames();
+  }
+  getUserNames() {
+        this.restService.getUserNames()
+        .subscribe(retval =>{
+          this.currentUserNameList = retval;
+        });
+    
   }
   get ChangePassword():Boolean{
     return this._changepassword;
@@ -47,6 +61,7 @@ export class AdminUserComponent extends ComponentBase implements OnInit {
       this.selectedTrack = track;
       this._isnewuser = false;
       this._changepassword = false;
+      this.thisVeryUserName = this.selectedTrack.username;
   }
   
   createTrack(){
@@ -59,18 +74,25 @@ export class AdminUserComponent extends ComponentBase implements OnInit {
   }
   
   saveTrack() {
-    if (this._changepassword && this.selectedTrack.password !== this.confirmpassword){
-      this.passwordsdontmatch = true;
-    }
-    else {
-        this.selectedTrack.defaultroute = 'product';
+    if (!this.invalidUserName){
+      if (this._changepassword && this.selectedTrack.password !== this.confirmpassword){
+        this.passwordsdontmatch = true;
+      }
+      else {
+        this.tracksavestatus = "Saving";
+        this.modalService.open(this.saveProgressModal);
         this.restService.saveObject(this.componentName,this.selectedTrack)
         .subscribe(retval =>{
             this.tracks = retval.objectcollection.items;
             this.selectedTrack = retval.saveobject;
             this._changepassword = false;
             this._isnewuser = false;
+            this.tracksavestatus = "Done";
         });      
+      }
+    }
+    else {
+      this.usernamefield.nativeElement.focus();
     }
   }
   
@@ -85,5 +107,27 @@ export class AdminUserComponent extends ComponentBase implements OnInit {
       });
     }
   }
+  isvalidusername(){
+    if (this.selectedTrack.username !== this.thisVeryUserName){
+      let instances = 0;
+      this.currentUserNameList.forEach(username => {
+        if (username == this.selectedTrack.username){
+          instances += 1;
+        }
+      });
+      if (instances === 1){
+        this.invalidUserName = true;
+        this.invalidUserNameMsg = "This user name is already in use. Please choose another.";
+      } else if (this.selectedTrack.username.length < 5){
+        this.invalidUserName = true;
+        this.invalidUserNameMsg = "The user name must be at least 5 characters long.";
+      } else {
+        this.invalidUserName = false;
+      }
+    } else {
+      this.invalidUserName = false;
+    }
+
+    }
   
 }

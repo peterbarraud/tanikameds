@@ -23,6 +23,9 @@ export class AppComponent implements OnInit {
   isValidUser() {
     return this.appUserService.IsValidUser;
   }
+  isAdminUser(){
+    return this.appUserService.IsAdminUser;
+  }
 
   gotoLogin(){
     this.appUserService.LogoutUser(this.router);

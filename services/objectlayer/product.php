@@ -1,5 +1,8 @@
 <?php
 require_once('objectbase.php');
+require_once('vendorproductpricecollection.php');
+require_once('vendorproductprice.php');
+require_once('logger.php');
 class product extends objectbase {
     // now for products we have lots of related info
     // however, we don't want to get this information (details) by default. meaning, we only want to get this info details on request
@@ -8,7 +11,7 @@ class product extends objectbase {
     // when we are getting the collection of products we are not going to get related details
     // we will only get this info on request
     // most likely when we're gettting the product details for a single product
-    public function SetProductDetails() {
+    public function SetProductDetails($vendorid) {
         require_once('objectlayer/manufacturer.php');
         $manufacturer = new manufacturer($this->manufacturerid);
         $this->manufacturername = $manufacturer->name;
@@ -44,6 +47,9 @@ class product extends objectbase {
                 array_push($this->subconstituentnames,$subconstituent->name);
             }
         }
+        $this->productprice = product::getproductprice($this->id, $vendorid);
+        $this->vendorid = $vendorid;
+
     }
     public function Save(){
         $dataLayer = DataLayer::Instance();
@@ -73,9 +79,41 @@ class product extends objectbase {
         $product->subconstituentids = join('|', $subconstituentids);
         $dataLayer->Save($product, TRUE);
         // after saving the product now we save the product price by vendor
-        $dataLayer->SaveVendorProductPrice($product->id, $this->productprice, $this->vendorid);
+        $this->id = $product->id;
+        $this->SaveVendorProductPrice();
         
     }
+    private static function getproductprice($productid, $vendorid){
+        $price = null;
+        $filter = array("vendorid" => $vendorid, "productid" => $productid);
+        $vendorproductpricecollection = new vendorproductpricecollection($filter);
+        if (sizeof($vendorproductpricecollection->items)) {
+            $price = $vendorproductpricecollection->items[0]->price;
+        }
+        return $price;
+    }
+    function SaveVendorProductPrice() {
+        $logger = new logger();
+        $logger->println($this);
+        $vendorproductpricecollection = new vendorproductpricecollection(array("vendorid" => $this->vendorid, "productid" => $this->id));
+		if (sizeof($vendorproductpricecollection->items)){
+            $logger->println('here');
+            $vendorproductpricecollection->items[0]->price = $this->productprice;
+            $logger->printinc();
+			$vendorproductpricecollection->items[0]->Save();
+		} else {
+            $logger->println('in else');
+			require_once('objectlayer/vendorproductprice.php');
+			$vendorproductprice = new vendorproductprice();
+			$vendorproductprice->vendorid = $this->vendorid;
+			$vendorproductprice->productid = $this->id;
+			$vendorproductprice->price = $this->productprice;
+            $logger->println($vendorproductprice);
+			$vendorproductprice->Save();
+            $logger->println('AND HERE');
+		}
+    }
+    
     private static function get_object_id($classname, $objectname, $dataLayer){
         $retval = $dataLayer->GetIdByFieldName($classname, 'name', $objectname);
         if (!isset($retval)){

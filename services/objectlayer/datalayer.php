@@ -160,7 +160,7 @@ final class DataLayer {
 			  }
 		  }
 		  $set_list = rtrim(rtrim($set_list),',');
-		  $execute_sql = 'update ' . get_class($object) . ' set ' . $set_list . ' where id = ' . $object->id;
+		  $execute_sql = 'update ' . get_class($object) . ' set ' . $set_list . ' where id = ' . $object->id . ';';
 		  $this->conn->query($execute_sql);
       }
 
@@ -181,7 +181,7 @@ final class DataLayer {
     $this->conn->query($execute_sql);
     
   }
-  public function SaveVendorProductPrice($productid, $productprice, $vendorid){
+  public function GetVendorProductPrice($productid){
     $if_exists_sql = "select id from vendorproductprice where vendorid=$vendorid and productid=$productid;";
     if ($this->conn->query($if_exists_sql)->num_rows){
       $execute_sql = "update vendorproductprice set price=$productprice where vendorid=$vendorid and productid=$productid;";
@@ -190,16 +190,6 @@ final class DataLayer {
     }
     $this->conn->query($execute_sql);
   }
-  // public function GetParentProductIDs($object){
-  //   $productids = array();
-  //   $execute_sql = 'select id from product where ' . get_class($object) . 'id = ' . $object->id;
-  //   $result = $this->conn->query($execute_sql);
-  //   while($row = $result->fetch_assoc()) {
-  //     array_push($productids, $row['id']);
-  //   }
-  //   return $productids;
-  // }
-  
 }
     
 

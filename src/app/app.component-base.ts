@@ -2,16 +2,21 @@ import { Component, Input, ViewChildren, ViewChild, QueryList, ElementRef, After
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 
 import { RestService } from './rest.service';
+import { AppUserService } from './app-user.service';
+
 
 @Component({})
 export class ComponentBase implements AfterViewInit {
     tracks:any;
     selectedTrack:any;
     componentName:string;
-    cannotDeleteObjectName:string
+    cannotDeleteObjectName:string;
+    protected tracksavestatus:string;
+
 
     @ViewChild('cannotDelete') cannotDeleteModal: ElementRef;
     @ViewChildren('defaultFormElement') elements: QueryList<ElementRef>;
+    @ViewChild('saveprogress') protected saveProgressModal:ElementRef;
     private _defaultFormElement:ElementRef;
 
     ngAfterViewInit() {
@@ -21,8 +26,8 @@ export class ComponentBase implements AfterViewInit {
         });    
     }
 
-    // set the access modifier for the restService member as public so it can be accessed by it's children
-    constructor(public restService: RestService, public modalService: NgbModal) {}
+    // set the access modifier for the restService member as protected so it can be accessed by it's children
+    constructor(protected restService: RestService, protected modalService: NgbModal, protected appuserService:AppUserService) {}
 
     getTracks(){
      this.restService.getObjectCollection(this.componentName)
@@ -41,10 +46,13 @@ export class ComponentBase implements AfterViewInit {
     }
 
     saveTrack() {
+        this.tracksavestatus = "Saving";
+        this.modalService.open(this.saveProgressModal);
         this.restService.saveObject(this.componentName,this.selectedTrack)
         .subscribe(retval =>{
             this.tracks = retval.objectcollection.items;
             this.selectedTrack = retval.saveobject;
+            this.tracksavestatus = "Done";
         });
     }
     

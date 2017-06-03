@@ -60,3 +60,18 @@ Right now we have to put this into each of the object HTML files -->
     <button type="button" class="btn btn-secondary" (click)="c('Close click')">OK</button>
   </div>
 </template>
+<template #saveprogress let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Saving Ailment</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>{{tracksavestatus}}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" [disabled]="tracksavestatus==='Saving'" class="btn btn-secondary" (click)="c('Close click')">OK</button>
+  </div>
+</template>
+

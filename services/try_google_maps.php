@@ -1,12 +1,14 @@
 <?php
 
+$curl = curl_init();
+
+curl_setopt($curl, CURLOPT_URL, 'https://maps.googleapis.com/maps/api/geocode/json?address=' . rawurlencode($address));
+
+curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+
+$json = curl_exec($curl);
+
+curl_close ($curl);
 
 
-$g_url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=40.6655101,-73.89188969999998&destinations=40.6905615,-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626&key=AIzaSyAEB8OPx1n_i7HXvhK_ANCSijcJzlq-oT8";
-
-$resp_json = file_get_contents($g_url);
-
-file_put_contents('so-it-works.json', $resp_json);
-
-echo "<h1> yes it seems to</h1>"
 ?>

@@ -8,28 +8,67 @@
             (createTrack)="createTrack()"
              ></app-railroad>
     </div>
-    <div class="col-4">
+    <div class="col-8">
         <form #vendorForm="ngForm" (ngSubmit)="saveTrack()" *ngIf="selectedTrack">
-            <div class="form-group">
-                <label for="vendorName">vendor name</label>
-                <input type="text" class="form-control" id="ailmentName"
-                        aria-describedby="ailmentNamelHelp"
-                        placeholder="Vendor name"
-                        name="name"
-                        [(ngModel)]="selectedTrack.name"
-                        #defaultFormElement
-                        required >
-                <small id="ailmentNamelHelp" class="form-text text-muted">Enter the name of a new vendor</small>
+          <p class="h4">Chemist: {{selectedTrack.name}}</p>
+          <p class="lead">
+            <span>Use this form to give the chemist permssions to manage their data</span>
+          </p>
+          <div class="form-group">
+              <label for="fullName">User name</label>
+              <input type="text" class="form-control" id="username"
+                      aria-describedby="fullNamelHelp"
+                      placeholder="User name"
+                      name="username"
+                      #usernamefield
+                      [(ngModel)]="selectedTrack.username"
+                      (blur)="isvalidusername()"
+                      required >
+              <small id="fullNamelHelp" class="form-text text-danger font-weight-bold" *ngIf="invalidUserName">{{invalidUserNameMsg}}</small>
+              <small id="fullNamelHelp" class="form-text text-muted" *ngIf="!invalidUserName">Enter the user name that will be used by the Chemist to upload data</small>
+          </div>
+          <div class="form-group">
+              <label for="fullName">Password</label>
+              <input type="text" class="form-control" id="password"
+                      aria-describedby="fullNamelHelp"
+                      placeholder="User name"
+                      name="password"
+                      [(ngModel)]="selectedTrack.password"
+                      required >
+              <small id="fullNamelHelp" class="form-text text-muted">Enter the password that will be used by the Chemist to upload data</small>
+          </div>
+          <div class="row" style="margin-bottom:5px;">
+            <div class="col-2" style="border: 1px solid; margin-right: 5px;">
+              <div class="form-group">
+                  <label for="fullName">Vendor can add new products</label>
+                  <input type="checkbox" class="form-control" id="canaddproduct"
+                          aria-describedby="fullNamelHelp"
+                          name="canaddproduct"
+                          [(ngModel)]="selectedTrack.canaddproduct"
+                          >
+                  <small id="fullNamelHelp" class="form-text text-muted">Check if this vendor is allowed to add products</small>
+              </div>
             </div>
-            <div class="form-group">
-                <label for="ailmentDescription">Description</label>
-                <textarea class="form-control" id="ailmentDescription" rows="2"
-                aria-describedby="ailmentDescriptionlHelp"
-                placeholder="Vendor description"
-                name="description"
-                [(ngModel)]="selectedTrack.description" ></textarea>
-                <small id="ailmentDescriptionlHelp" class="form-text text-muted">Enter a brief description for the vendor</small>
+            <div class="col-2" style="border: 1px solid;">
+              <div class="form-group">
+                  <label for="fullName">Vendor can delete products</label>
+                  <input type="checkbox" class="form-control" id="candeleteproduct"
+                          aria-describedby="fullNamelHelp"
+                          name="candeleteproduct"
+                          [(ngModel)]="selectedTrack.candeleteproduct"
+                          >
+                  <small id="fullNamelHelp" class="form-text text-muted">Check if this vendor is allowed to delete products</small>
+              </div>
             </div>
+          </div>
+          <div class="row">
+<div class="alert alert-info" role="alert">
+  <div><strong>Note:</strong> Every vendor that you create in the System will have access to add their own prices for the products that are already available.</div>
+  <div>However, you can also allow certain vendors to add or delete products. To allow this vendor to add or delete product, choose the above checkboxes</div>
+
+</div>            
+          </div>
+
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
         <!-- The following div displays when a user just got to the vendors page-->
@@ -37,9 +76,6 @@
             <app-notrackselected noTracks="0" trackTitle="Vendor" (createTrack)="createTrack()"></app-notrackselected>
         </div>
 
-    </div>
-    <div class="col-4">
-        abc
     </div>
   </div><!-- track row -->
   <div class="row" *ngIf="this.tracks!==undefined && this.tracks.length===0 && !this.selectedTrack">
@@ -84,3 +120,18 @@ Right now we have to put this into each of the object HTML files -->
     <button type="button" class="btn btn-primary" (click)="c('Close click')">Close</button>
   </div>
 </template>
+<template #saveprogress let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Saving Chemist</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>{{tracksavestatus}}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" [disabled]="tracksavestatus==='Saving'" class="btn btn-secondary" (click)="c('Close click')">OK</button>
+  </div>
+</template>
+

@@ -22,8 +22,7 @@
                         required
                         >
                 <small id="productNamelHelp" class="form-text text-muted">Enter the name of a new product</small>
-            </div>
-    
+            </div>    
             <div class="form-group">
                 <label for="productDescription">Description</label>
                 <textarea class="form-control" id="productDescription" rows="2"
@@ -115,6 +114,18 @@
                     </app-multi-product-item-select>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="productName">Price</label>
+                <input type="text" class="form-control" id="productPrice"
+                        aria-describedby="productPriceHelp"
+                        placeholder="Product price"
+                        name="price"
+                        #defaultFormElement
+                        [(ngModel)]="selectedTrack.productprice"
+                        required
+                        >
+                <small id="productNamelHelp" class="form-text text-muted">Enter your vendor price for the product</small>
+            </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
         <div *ngIf="this.tracks!==undefined && this.tracks.length>0 && !this.selectedTrack">
@@ -134,3 +145,18 @@
 <!--Help tips for the Product guided help-->
 <template #namehelpcontent><p class="help-para">Enter a product name (<span class="text-danger">mandatory</span>) and press the <span class="font-weight-bold">Tab</span> key to move to the next field.</p></template>
 <template #descriptionhelpcontent><p class="help-para">Enter a product description (<span class="text-danger">optional</span>) and press the <span class="font-weight-bold">Tab</span> key to move to the next field.</p></template>
+
+<template #saveprogress let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Saving Product</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>{{tracksavestatus}}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" [disabled]="tracksavestatus==='Saving'" class="btn btn-secondary" (click)="c('Close click')">OK</button>
+  </div>
+</template>

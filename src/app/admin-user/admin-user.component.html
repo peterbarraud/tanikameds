@@ -22,13 +22,26 @@
             </div>
             <div class="form-group">
                 <label for="fullName">User name</label>
-                <input type="email" class="form-control" id="fullName"
+                <input type="text" class="form-control" id="username"
                         aria-describedby="fullNamelHelp"
-                        placeholder="User name (must in email format)"
+                        placeholder="User name"
                         name="username"
+                        #usernamefield
                         [(ngModel)]="selectedTrack.username"
+                        (blur)="isvalidusername()"
                         required >
-                <small id="fullNamelHelp" class="form-text text-muted">Enter the user name of a new Admin user</small>
+                <small id="fullNamelHelp" class="form-text text-muted" *ngIf="!invalidUserName">Enter the user name of a new Admin user</small>
+                <small id="fullNamelHelp" class="form-text text-danger" *ngIf="invalidUserName">{{invalidUserNameMsg}}</small>
+            </div>
+            <div class="form-group">
+                <label for="fullName">Email</label>
+                <input type="email" class="form-control" id="email"
+                        aria-describedby="fullNamelHelp"
+                        placeholder="Email"
+                        name="email"
+                        [(ngModel)]="selectedTrack.email"
+                        required >
+                <small id="fullNamelHelp" class="form-text text-muted">Enter the email of a new Admin user</small>
             </div>
             <div class="form-group">
                 <div class="row">
@@ -83,8 +96,25 @@
   <div class="modal-body">
     <p>You cannot delete the last <span class="font-weight-bold">admin user</span> in the System.</p>
     <p>If you do, there will be no way to log into the System</p>
+    <p>So, first create another user and then delete this user.</p>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-secondary" (click)="c('Close click')">OK</button>
   </div>
 </template>
+
+<template #saveprogress let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Saving User</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>{{tracksavestatus}}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" [disabled]="tracksavestatus==='Saving'" class="btn btn-secondary" (click)="c('Close click')">OK</button>
+  </div>
+</template>
+

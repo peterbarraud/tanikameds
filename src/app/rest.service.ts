@@ -48,18 +48,22 @@ export class RestService {
   }
 
 //   special methods for product object
-  getProductDetails(id:number): Observable<any>{
-      return this.http.get(this.hostServerUrl + 'getproductdetails/' + id + '/')
+  getProductDetails(productid:number, userid: Number): Observable<any>{
+      return this.http.get(this.hostServerUrl + 'getproductdetails/' + productid + '/' + userid + '/')
       .map( (res: Response) =>  res.json() )
   }
     
-  newProduct(): Observable<any>{
-      return this.http.get(this.hostServerUrl + 'getnewproductdetails/')
+  newProduct(userid: Number): Observable<any>{
+      return this.http.get(this.hostServerUrl + 'getnewproductdetails/' + userid + '/')
       .map( (res: Response) =>  res.json() )
   }
 
   getItemNamesList(): Observable<any>{
       return this.http.get(this.hostServerUrl + 'getproductitemsnamelist/')
+      .map( (res: Response) =>  res.json() )
+  }
+  getUserNames(): Observable<any>{
+      return this.http.get(this.hostServerUrl + 'getusernames/')
       .map( (res: Response) =>  res.json() )
   }
 

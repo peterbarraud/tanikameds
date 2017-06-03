@@ -8,6 +8,8 @@ export class AppUserService {
   private _defaultroute:string = null;
   private _selectedRoute:string = null;
   private _badlogin:Boolean = null;
+  private _userid:Number = -1;
+  private _isAdminUser:Boolean = false;
   constructor(private restService: RestService) { }
 
   ValidateUser(username:string, password:string, router){
@@ -21,6 +23,8 @@ export class AppUserService {
           this._fullname = retval.user.name;
           this.NavigateUser(router);
           this._badlogin = false;
+          this._userid = parseInt(retval.user.id);
+          this._isAdminUser = retval.user.userclassname === "admin";
         }
         else {
           this._badlogin = true;
@@ -52,8 +56,14 @@ export class AppUserService {
   get IsValidUser():Boolean {
     return this._isvaliduser;
   }
+  get IsAdminUser():Boolean {
+    return this._isAdminUser;
+  }
 
   get BadLogin():Boolean {
     return this._badlogin;
+  }
+  get UserId():Number {
+    return this._userid;
   }
 }
