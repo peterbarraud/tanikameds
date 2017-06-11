@@ -87,9 +87,7 @@ export class RegistrationFormComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.focusbox.nativeElement.focus();
   }
-  onCityFocus(){
-    console.log('here');
-  }
+
   get_state_cities(statefield){
     let cities = this.states_object[statefield.value];
     this.state_cities = [];

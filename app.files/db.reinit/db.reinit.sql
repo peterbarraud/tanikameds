@@ -160,18 +160,7 @@ create table if not exists vendorproductprice (
 	primary key(id)
 );
 
-insert into appuser (name, username, email, password, defaultroute, userclassname) values ('Monika Aggarwal', 'monikaa75@gmail.com', 'monikaa75@gmail.com', 'admin', 'vendor', 'admin');
-insert into appuser(name, username, email, password, defaultroute, showproducthelpdialog, mobilenumber, addressone, addresstwo, cityname, pincode, statename, locationlatitude, locationlongitude, userclassname, canaddproduct, candeleteproduct, canmanageuser) values
-("v1", "gapeterb@gmail.com", "", "", "", "", "09810734454", "101", "A-101, Saffron Block, Niho Scottish Gardens", "FARRUKHABAD", "209601", "UTTAR PRADESH", "", "", "vendor", "", "", ""),
-("v2", "peterbarraud@yahoo.com", "", "", "", "", "09810734454", "101", "A-101, Saffron Block, Niho Scottish Gardens", "FARRUKHABAD", "209601", "UTTAR PRADESH", "", "", "vendor", "", "", ""),
-("v9", "barraud@adobe.com", "", "", "", "", "09810734454", "101", "A-101, Saffron Block, Niho Scottish Gardens", "FARRUKHABAD", "209601", "UTTAR PRADESH", "", "", "vendor", "", "", "");
-insert into category (name) values ('Dietary supplements'),('Baby care'),('Women care'),('Drug');
-insert into ailment (name) values ('Antibiotic'),('Antiviral');
-insert into producttype (name) values ('Tablet'),('Capsule'),('Syrup');
-insert into manufacturer (name,address,email) values ('GlaxoSmithKline','Address of GlaxoSmithKline','GlaxoSmithKline@email.com'),('Indchemie','Address of Indchemie','Indchemie@email.com'),('Novamed','Address of Novamed','Novamed@email.com');
-insert into drugtype (name) values ('OTC'),('Prescribed');
-insert into constituent (name) values ('Amoxicillin 500mg'),('Amoxicillin 400mg'),('Clavunic Acid 125mg'),('Clavunic Acid 57.8mg');
-insert into subconstituent (name) values ('Lactobacillus');
+insert into appuser (name, username, email, password, defaultroute, userclassname, canaddproduct, candeleteproduct, canmanageuser) values ('Monika Aggarwal', 'monikaa75@gmail.com', 'monikaa75@gmail.com', 'admin', 'product', 'admin', 1, 1, 1);
 -- To insert product records, run the XLS Macro
 SET FOREIGN_KEY_CHECKS=1;
 

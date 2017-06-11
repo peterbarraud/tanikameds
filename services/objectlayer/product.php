@@ -2,7 +2,6 @@
 require_once('objectbase.php');
 require_once('vendorproductpricecollection.php');
 require_once('vendorproductprice.php');
-require_once('logger.php');
 class product extends objectbase {
     // now for products we have lots of related info
     // however, we don't want to get this information (details) by default. meaning, we only want to get this info details on request
@@ -93,24 +92,17 @@ class product extends objectbase {
         return $price;
     }
     function SaveVendorProductPrice() {
-        $logger = new logger();
-        $logger->println($this);
         $vendorproductpricecollection = new vendorproductpricecollection(array("vendorid" => $this->vendorid, "productid" => $this->id));
 		if (sizeof($vendorproductpricecollection->items)){
-            $logger->println('here');
             $vendorproductpricecollection->items[0]->price = $this->productprice;
-            $logger->printinc();
 			$vendorproductpricecollection->items[0]->Save();
 		} else {
-            $logger->println('in else');
 			require_once('objectlayer/vendorproductprice.php');
 			$vendorproductprice = new vendorproductprice();
 			$vendorproductprice->vendorid = $this->vendorid;
 			$vendorproductprice->productid = $this->id;
 			$vendorproductprice->price = $this->productprice;
-            $logger->println($vendorproductprice);
 			$vendorproductprice->Save();
-            $logger->println('AND HERE');
 		}
     }
     

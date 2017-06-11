@@ -39,7 +39,6 @@ export class VendorComponent extends ComponentBase implements OnInit {
   createTrack(){
       // this.createvendor = true;
       this.modalService.open(this.cannotCreateVendorModal);
-      console.log("got here");
   }
   deleteTrack(object){
       this.restService.deleteObject(this.componentName, object.id)

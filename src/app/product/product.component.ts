@@ -20,7 +20,6 @@ export class ProductComponent extends ComponentBase implements OnInit{
     this.componentName = 'product';
     this.showGuidedHelp = "";
     this.getTracks();
-    console.log(this.tracks);
     this.getItemNamesList();
   }
 
@@ -32,7 +31,6 @@ export class ProductComponent extends ComponentBase implements OnInit{
           this.selectedTrack = retval;
           this.setDefaultFocus();
           this.showGuidedHelp = "";
-          console.log(this.selectedTrack);
         });
   }
   createTrack(isguided=false){

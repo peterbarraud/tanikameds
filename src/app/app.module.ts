@@ -122,7 +122,7 @@ import { VendorComponent } from './vendor/vendor.component';
   providers: [
     RestService,
     AppUserService,
-    PaginationConfig
+    PaginationConfig,
     
   ],
   bootstrap: [AppComponent]

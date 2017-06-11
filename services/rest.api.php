@@ -13,10 +13,10 @@
 	// create a test rest to try out stuff before we push it through
 	$app->get('/justtotest/', 'justtotest');
 	function justtotest() {
-		require_once('logger.php');
-        $logger = new logger();
-        $logger->println('here at lesat');
-		print(0);
+		$string = file_get_contents("datainfo.json");
+		$json_a = json_decode($string, true);
+		echo $json_a['server'];
+		echo $json_a['database'];		
 	}
 	
 	$app->get('/validateuser/:username/:password/', 'getappuser');
@@ -81,6 +81,7 @@
 				}
 			}
 		}
+		$vendorid = 1;
 		$product->SetProductDetails($vendorid);
 		$retval['product'] = $product;
 		allow_cross_domain_calls();
@@ -111,6 +112,9 @@
 		$app = new Slim();
 		require_once('objectlayer/' . $classname . '.php');
 		$jsonobject = json_decode($app->request()->getBody());
+		require_once('logger.php');
+		$logger = new Logger();
+		$logger->printobject($jsonobject);
 		$object = GetObjectForJSON($jsonobject,$classname);
 		$object->Save();
 		$retval = array();
@@ -125,21 +129,24 @@
 
 	$app->post('/saveproducts/:username/:password/', 'saveproducts');
 	function saveproducts($username, $password){
-		require_once('logger.php');
-        $logger = new logger();
 		$validated_user_info = validate_user($username, $password);
 		$retval = array();
 		if ($validated_user_info['invaliduser'] == 0){
 			require_once('objectlayer/product.php');
 			require_once('objectlayer/productcollection.php');
-			$no_err_products = array();
+			$added_prods = array();
+			$deleted_prods_no_perm = array();
+			$deleted_prods = array();
+			$price_update_prods = array();
 			$err_products = array();
 			$app = new Slim();
+			require_once('logger.php');
+			$logger = new Logger();
 			$products_json = json_decode($app->request()->getBody());
 			foreach($products_json as $product_json) {
 				try {
 					$product = GetObjectForJSON($product_json, 'product');
-					$logger->println($product->productprice);
+					$logger->printobject($product);
 					// check if this is a DELETE row
 					if (strtoupper(substr($product->productdelete,0,1)) == "Y"){
 						// but also check if this user has permissions to delete
@@ -147,8 +154,11 @@
 							$productstodelete = new productcollection(array("name"=>$product->name));
 							if ($productstodelete->length == 1){
 								$productstodelete->items[0]->Delete();
+								array_push($deleted_prods, $productstodelete->items[0]->name);
 							}
-						}						
+						} else {
+							array_push($deleted_prods_no_perm, $product->name);
+						}
 					}
 					// else we'll insert or update
 					else {
@@ -158,25 +168,28 @@
 							$product->description = null;
 							$product->vendorid = $validated_user_info['user']->id;
 							$product->Save();
-							array_push($no_err_products, $product->name);
+							array_push($added_prods, $product->name);
 						}
 					}
-					if (!$validated_user_info['user']->canaddproduct){
-						$logger->println("good so far");
+					if (!$validated_user_info['user']->canaddproduct && !$validated_user_info['user']->candeleteproduct){
+						$productsforpriceupdate = new productcollection(array("name"=>$product->name));
+						if ($productsforpriceupdate->length == 1){
+							$updatepriceproduct = $productsforpriceupdate->items[0];
+							$updatepriceproduct->vendorid = $validated_user_info['user']->id;
+							$updatepriceproduct->productprice = $product->productprice;
+							$updatepriceproduct->SaveVendorProductPrice();
+							array_push($price_update_prods,$updatepriceproduct->name);
+						}
 					}
-					// $productsforpriceupdate = new productcollection(array("name"=>$product->name));
-					// if ($productsforpriceupdate->length == 1){
-					// 	$updatepriceproduct = $productsforpriceupdate->items[0];
-					// 	$updatepriceproduct->vendorid = $validated_user_info['user']->id;
-					// 	$updatepriceproduct->SaveVendorProductPrice();
-					// }
 				}
 				catch (Exception $e) {
-					$logger->println($e);
 					array_push($err_products, $product->name);
 				}
 			}
-			$retval['no-err-products'] = $no_err_products;
+			$retval['added-products'] = $added_prods;
+			$retval['deleted-products'] = $deleted_prods;
+			$retval['price-update-products'] = $price_update_prods;
+			$retval['deleted-prods-no-perm'] = $deleted_prods_no_perm;
 			$retval['err-products'] = $err_products;
 			$retval['invaliduser'] = 0;
 		}

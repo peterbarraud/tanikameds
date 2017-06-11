@@ -17,7 +17,8 @@ final class DataLayer {
     */
   private function __construct()
   {
-    $this->conn = new mysqli('localhost','peterb','Pokerj#07','tanikae1_meds');
+		$json_a = json_decode(file_get_contents("datainfo.json"), true);
+    $this->conn = new mysqli($json_a['server'],$json_a['username'],$json_a['password'],$json_a['database']);
   }
 
   public function __destruct()
