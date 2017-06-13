@@ -156,7 +156,38 @@ create table if not exists vendorproductprice (
 	productid int unsigned NOT NULL,
 	price decimal(10,2) NOT NULL,
 	FOREIGN KEY (`productid`) REFERENCES `product` (`id`),
-	FOREIGN KEY (`productid`) REFERENCES `product` (`id`),
+	FOREIGN KEY (`vendorid`) REFERENCES `vendor` (`id`),
+	primary key(id)
+);
+
+drop table if exists customer;
+create table if not exists customer (
+	id int unsigned NOT NULL AUTO_INCREMENT,
+	name varchar(100) NOT NULL,
+	email varchar(100) NOT NULL,
+	mobile varchar(100) NOT NULL,
+	address1 varchar(100) NOT NULL,
+	address2 varchar(100) NOT NULL,
+	address3 varchar(100) NOT NULL,
+	primary key(id)
+);
+
+drop table if exists customerorder;
+create table if not exists customerorder (
+	id int unsigned NOT NULL AUTO_INCREMENT,
+	customerid int unsigned NOT NULL,
+	vendorid tinyint unsigned NOT NULL,
+	FOREIGN KEY (`customerid`) REFERENCES `customer` (`id`),
+	FOREIGN KEY (`vendorid`) REFERENCES `vendor` (`id`),
+	primary key(id)
+);
+
+drop table if exists vendorproductorder;
+create table if not exists vendorproductorder (
+	id int unsigned NOT NULL AUTO_INCREMENT,
+	vendorproductpriceid int unsigned NOT NULL,
+	quantity SMALLINT unsigned NOT NULL,
+	FOREIGN KEY (`vendorproductpriceid`) REFERENCES `vendorproductprice` (`id`),
 	primary key(id)
 );
 

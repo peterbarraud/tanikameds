@@ -199,6 +199,22 @@
 		echo json_encode($retval);
 	}
 	
+	$app->post('/placeorder/', 'placeorder');
+	function placeorder(){
+		$app = new Slim();
+		$order_json = json_decode($app->request()->getBody());
+		require_once('logger.php');
+		$logger = new Logger();
+		require_once('objectlayer/customer.php');
+		$customer = GetObjectForJSON($order_json->customer, 'customer');
+		$logger->printobject($customer);
+		$customer->Save();
+		$logger->printobject($customer);
+		$customerid = $customer->id;
+		allow_cross_domain_calls();
+		echo json_encode($order_json);
+	}
+	
 	
 	$app->get('/deleteobjectbyid/:classname/:id/', 'deleteobject');
 	function deleteobject($classname,$id) {
