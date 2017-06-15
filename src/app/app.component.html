@@ -5,6 +5,9 @@
       <li class="nav-item">
         <a [ngClass]="navClass('product')" (click)="gotoRoute('product')">Product</a>
       </li>
+      <li class="nav-item">
+        <a [ngClass]="navClass('customerorder')" (click)="gotoRoute('customerorder')">My orders</a>
+      </li>
       <li class="nav-item" *ngIf="isAdminUser()">
         <a [ngClass]="navClass('ailment')" (click)="gotoRoute('ailment')">Ailment</a>
       </li>
