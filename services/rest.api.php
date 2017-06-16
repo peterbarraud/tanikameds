@@ -9,6 +9,7 @@
 	//this ensures that a single connection is opened for the entire duration of the API but no more
 	//we can then also (brilliant, this one) make full use of db transactions - we can do a full commit / rollback of everything that happened for the duration of the API
 
+    require_once('logger.php');
 
 	// create a test rest to try out stuff before we push it through
 	$app->get('/justtotest/', 'justtotest');
@@ -112,9 +113,6 @@
 		$app = new Slim();
 		require_once('objectlayer/' . $classname . '.php');
 		$jsonobject = json_decode($app->request()->getBody());
-		require_once('logger.php');
-		$logger = new Logger();
-		$logger->printobject($jsonobject);
 		$object = GetObjectForJSON($jsonobject,$classname);
 		$object->Save();
 		$retval = array();
@@ -129,6 +127,7 @@
 
 	$app->post('/saveproducts/:username/:password/', 'saveproducts');
 	function saveproducts($username, $password){
+		$logger = new Logger();
 		$validated_user_info = validate_user($username, $password);
 		$retval = array();
 		if ($validated_user_info['invaliduser'] == 0){
@@ -140,13 +139,10 @@
 			$price_update_prods = array();
 			$err_products = array();
 			$app = new Slim();
-			require_once('logger.php');
-			$logger = new Logger();
 			$products_json = json_decode($app->request()->getBody());
 			foreach($products_json as $product_json) {
 				try {
 					$product = GetObjectForJSON($product_json, 'product');
-					$logger->printobject($product);
 					// check if this is a DELETE row
 					if (strtoupper(substr($product->productdelete,0,1)) == "Y"){
 						// but also check if this user has permissions to delete
@@ -167,6 +163,7 @@
 							$product->id = null;
 							$product->description = null;
 							$product->vendorid = $validated_user_info['user']->id;
+							$logger->println('insert / update');
 							$product->Save();
 							array_push($added_prods, $product->name);
 						}
@@ -203,16 +200,66 @@
 	function placeorder(){
 		$app = new Slim();
 		$order_json = json_decode($app->request()->getBody());
-		require_once('logger.php');
 		$logger = new Logger();
 		require_once('objectlayer/customer.php');
 		$customer = GetObjectForJSON($order_json->customer, 'customer');
-		$logger->printobject($customer);
 		$customer->Save();
-		$logger->printobject($customer);
-		$customerid = $customer->id;
+		require_once('objectlayer/customerorder.php');
+		$customerorder = new customerorder();
+		$customerorder->customerid = $customer->id;
+		// TODO
+		// MASSIVE: we need to get the vendor from the front-end
+		$customerorder->vendorid = 1;
+		$customerorder->Save();
+		require_once('objectlayer/customerproductorder.php');
+		foreach ($order_json->cart as $cartitem){
+			$customerproductorder = new customerproductorder();
+			$customerproductorder->customerorderid = $customerorder->id;
+			$customerproductorder->productid = $cartitem->productid;
+			$customerproductorder->quantity = $cartitem->quantity;
+			$logger->println($cartitem->productid . ': ' . $cartitem->quantity);
+			$customerproductorder->Save();
+		}
 		allow_cross_domain_calls();
 		echo json_encode($order_json);
+	}
+	
+	$app->get('/getordersbyvendor/:vendorid/', 'getordersbyvendor');
+	function getordersbyvendor($vendorid) {
+		require_once('objectlayer/customerordercollection.php');
+		$customerordercollection = new customerordercollection(array("vendorid" => $vendorid));
+		$customerordercollection->AddCustomerDetails();
+		allow_cross_domain_calls();
+		echo json_encode($customerordercollection);
+	}
+	$app->get('/getorderdetails/:customerorderid/', 'getorderdetails');
+	function getorderdetails($customerorderid) {
+		// TODO: Which is better
+		// Should this code be done here in the Rest service
+		// Or should we decorate the customerordercollection class with a method to add this data to it
+		// Lets keep that for another day then
+		require_once('objectlayer/customerorder.php');
+		require_once('objectlayer/customer.php');
+		require_once('objectlayer/customerproductordercollection.php');
+		require_once('objectlayer/vendorproductpricecollection.php');
+		require_once('objectlayer/product.php');
+		$retval = array();
+		// IMPORTANT: If you need to get an item by id you shouldnt be using the collection filter
+		$customerorder = new customerorder($customerorderid);
+		$retval['customerorder'] = $customerorder;
+		$customer = new customer($customerorder->customerid);
+		$retval['customer'] = $customer;
+		$customerproductordercollection = new customerproductordercollection(["customerorderid" => $customerorderid]);
+		foreach ($customerproductordercollection->items as $customerproductorder){
+			$vendorproductpricecollection = new vendorproductpricecollection(["vendorid" => $customerorder->vendorid, "productid" => $customerproductorder->productid]);
+			$vendorproductprice = $vendorproductpricecollection->items[0];
+			$customerproductorder->price = $vendorproductprice->price;
+			$product = new product($customerproductorder->productid);
+			$customerproductorder->product = $product;
+		}
+		$retval['orderitems'] = $customerproductordercollection;
+		allow_cross_domain_calls();
+		echo json_encode($retval);
 	}
 	
 	

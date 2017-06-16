@@ -149,6 +149,7 @@ create table if not exists product
 	primary key(id)
 );
 
+-- price by vendor
 drop table if exists vendorproductprice;
 create table if not exists vendorproductprice (
 	id int unsigned NOT NULL AUTO_INCREMENT,
@@ -156,10 +157,12 @@ create table if not exists vendorproductprice (
 	productid int unsigned NOT NULL,
 	price decimal(10,2) NOT NULL,
 	FOREIGN KEY (`productid`) REFERENCES `product` (`id`),
-	FOREIGN KEY (`vendorid`) REFERENCES `vendor` (`id`),
+	FOREIGN KEY (`vendorid`) REFERENCES `appuser` (`id`),
 	primary key(id)
 );
 
+-- customer details (name, address, etc)
+-- may be used when we have registered users and stuff
 drop table if exists customer;
 create table if not exists customer (
 	id int unsigned NOT NULL AUTO_INCREMENT,
@@ -172,26 +175,40 @@ create table if not exists customer (
 	primary key(id)
 );
 
+-- one line item for every customer order by vendor
+-- if a customer has multiple orders from the same vendor, we'll have different line items
+-- we can also accomodate a customer who has one order from multiple vendors - one line item for each:
+--  because interally we will just take these as diffeent orders from the same customer. just to different vendors
 drop table if exists customerorder;
 create table if not exists customerorder (
 	id int unsigned NOT NULL AUTO_INCREMENT,
 	customerid int unsigned NOT NULL,
 	vendorid tinyint unsigned NOT NULL,
+	-- we are going to use a hard-wired check for TIMESTAMP fields
+	-- to use timestamp fields, you're going to have to append the field name with a _ts (for timestamp)
+	-- TODO: we need to have a check in our dbinit.bat for this
+	-- fail the dbinit if a timestamp field does not have the _ts append
+	-- now the reason we are doing this is when we do the datalayer insert / update. We don't want to touch these fields through code
+	-- MySQL must manage time stamp updates the way it does
+	orderdate_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updatedate_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	FOREIGN KEY (`customerid`) REFERENCES `customer` (`id`),
-	FOREIGN KEY (`vendorid`) REFERENCES `vendor` (`id`),
+	FOREIGN KEY (`vendorid`) REFERENCES `appuser` (`id`),
 	primary key(id)
 );
 
-drop table if exists vendorproductorder;
-create table if not exists vendorproductorder (
+-- one line item for every product that every customer bought for every vendor
+drop table if exists customerproductorder;
+create table if not exists customerproductorder (
 	id int unsigned NOT NULL AUTO_INCREMENT,
-	vendorproductpriceid int unsigned NOT NULL,
+	customerorderid int unsigned NOT NULL,
+	productid int unsigned NOT NULL,
 	quantity SMALLINT unsigned NOT NULL,
-	FOREIGN KEY (`vendorproductpriceid`) REFERENCES `vendorproductprice` (`id`),
+	FOREIGN KEY (`productid`) REFERENCES `product` (`id`),
+	FOREIGN KEY (`customerorderid`) REFERENCES `customerorder` (`id`),
 	primary key(id)
 );
 
 insert into appuser (name, username, email, password, defaultroute, userclassname, canaddproduct, candeleteproduct, canmanageuser) values ('Monika Aggarwal', 'monikaa75@gmail.com', 'monikaa75@gmail.com', 'admin', 'product', 'admin', 1, 1, 1);
 -- To insert product records, run the XLS Macro
 SET FOREIGN_KEY_CHECKS=1;
-

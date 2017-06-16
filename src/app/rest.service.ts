@@ -66,6 +66,10 @@ export class RestService {
       return this.http.get(this.hostServerUrl + 'getusernames/')
       .map( (res: Response) =>  res.json() )
   }
+  getOrdersByVendor(userid:Number): Observable<any>{
+      return this.http.get(this.hostServerUrl + 'getordersbyvendor/' + userid + '/')
+      .map( (res: Response) =>  res.json() )
+  }
 
 
 }

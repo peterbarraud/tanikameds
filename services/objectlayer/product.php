@@ -119,6 +119,9 @@ class product extends objectbase {
         }
         return $retval;
     }
+    // TODO:
+    // The data layer should not include table-specific code
+    // This will make the datalayer project-specific - Super bad
     public function Delete(){
         $dataLayer = DataLayer::Instance();
         $dataLayer->DeleteProductParentData($this, 'productconstituent');

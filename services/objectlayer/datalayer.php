@@ -70,36 +70,6 @@ final class DataLayer {
 
   }
   
-  // many-to-many relations
-  // deprecated
-  // public function GetRelatedIdsByProductId($productid, $relatedtable){
-  //   $retval = array();
-  //   $sql_statement = "select " . $relatedtable . "id from product" . $relatedtable . " where productid = ";
-  //   if ($productid == null){
-  //     $sql_statement .= 'null';
-  //   }
-  //   else {
-  //     $sql_statement .= $productid;
-  //   }
-  //   $result = $this->conn->query($sql_statement);
-  //   while($row = $result->fetch_assoc()) {
-  //     array_push($retval, $row[$relatedtable . 'id']);
-  //   }
-  //   return $retval;
-  // }
-  // deprecated
-  // public function SaveRelatedProductObject($productid, $relatedtable, $relatedid){
-  //   // right now what we're going to do is if the relationship exists we're just going to leave it alone
-  //   $relatedidfield = str_replace('product', '', $relatedtable) . 'id';
-  //   $sql_statement = "select count(id) as countid from $relatedtable where productid = $productid and $relatedidfield = $relatedid";
-  //   $result = $this->conn->query($sql_statement);
-  //   $record = $result->fetch_array(); 
-  //   if (!$record[0]){
-  //     $sql_statement = "insert into $relatedtable (productid, $relatedidfield) values ($productid, $relatedid);";
-  //     $result = $this->conn->query($sql_statement);
-  //   }    
-  // }
-  
   public function GetObjectIds($classname, $filter=null, $sortby=null, $sortdirection=null){
     $retval = array();
     $sql_statement = "select id from $classname";
@@ -135,7 +105,7 @@ final class DataLayer {
         $field_list = '';
         $value_list = '';
         foreach($object as $field => $value) {
-          if ($field != 'id'){
+          if (datalayer::include_field_in_execute_query($field)){
             $field_list .= $field . ', ';
             $value_list .= '"' . $value . '", ';
           }
@@ -150,7 +120,7 @@ final class DataLayer {
       else {
 		  $set_list = '';
 		  foreach($object as $field => $value) {
-			  if ($field != 'id'){
+			  if (datalayer::include_field_in_execute_query($field)){
 				  if (isset($value)){
 					  $value = '"' . $value . '"';
 				  }
@@ -182,14 +152,23 @@ final class DataLayer {
     $this->conn->query($execute_sql);
     
   }
-  public function GetVendorProductPrice($productid){
-    $if_exists_sql = "select id from vendorproductprice where vendorid=$vendorid and productid=$productid;";
-    if ($this->conn->query($if_exists_sql)->num_rows){
-      $execute_sql = "update vendorproductprice set price=$productprice where vendorid=$vendorid and productid=$productid;";
+  // The insert or update statements must not include certain fields:
+  // id
+  // timestamp fields that end with _ts
+  private static function include_field_in_execute_query($fieldname){
+    $retval = 1;  // default to include
+    if ($fieldname == 'id'){
+      $retval = 0;
     } else {
-      $execute_sql = "insert into vendorproductprice (vendorid, productid, price) values ($vendorid, $productid, $productprice);";
+      $length = strlen('_ts');
+      if ($length == 0) {
+          $retval = 0;
+      } else { 
+        $retval = substr($fieldname, -$length) === '_ts' ? 0 : 1;
+      }
     }
-    $this->conn->query($execute_sql);
+    return $retval;
+    
   }
 }
     
