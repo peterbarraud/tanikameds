@@ -38,6 +38,7 @@ import { FilterProductItemsPipe } from './filterproductitems.pipe';
 import { ValorTableComponent } from './valor-table/valor-table.component';
 import { RegistrationFormComponent } from './registration-form/registration-form.component';
 import { VendorComponent } from './vendor/vendor.component';
+import { CustomerOrderComponent } from './customer-order/customer-order.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { VendorComponent } from './vendor/vendor.component';
     ValorTableComponent,
     RegistrationFormComponent,
     VendorComponent,
+    CustomerOrderComponent,
   ],
   imports: [
     BrowserModule,
@@ -115,6 +117,10 @@ import { VendorComponent } from './vendor/vendor.component';
       {
         path: 'register', 
         component: RegistrationFormComponent,
+      },
+      {
+        path: 'customerorder', 
+        component: CustomerOrderComponent,
       },
     ]
     )
