@@ -423,9 +423,9 @@ function allow_cross_domain_calls() {
     //echo "You have CORS!";
 }
 function validate_user($username, $password){
-	require_once('logger.php');
-	$logger = new Logger();
-	$logger->println(0);
+	// require_once('logger.php');
+	// $logger = new Logger();
+	// $logger->println(0);
 	require_once('objectlayer/appusercollection.php');
 	require_once('objectlayer/orderstatuscollection.php');
 	$filter = array();

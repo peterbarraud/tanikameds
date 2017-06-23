@@ -1,4 +1,5 @@
 <div style="top:150px;left:300px;position:absolute;" *ngIf="getDetailsInProgress"><span class="badge badge-default" style="font-size:48px">Getting details. Please wait...</span></div>
+<button type="button" class="btn btn-secondary" style="margin-bottom: 2px" (click)="refreshTracks()">Refresh</button>
 <app-page-loading *ngIf="stillLoading"></app-page-loading>
 <app-valor-table [tableData]="tracks" (clickcell)="onClickTableCell($event)"></app-valor-table>
 <template ngbModalContainer></template>

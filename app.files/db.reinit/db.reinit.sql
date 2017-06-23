@@ -1,5 +1,5 @@
 SET FOREIGN_KEY_CHECKS=0;
-use tanikae1_meds_test;
+use tanikae1_meds;
 drop table if exists appuser;
 create table if not exists appuser (
 	id tinyint unsigned NOT NULL AUTO_INCREMENT,

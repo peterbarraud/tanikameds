@@ -40,5 +40,5 @@ testem.log
 Thumbs.db
 
 #PHP Service Files
-/services/*.log
+/services/logs/*.log
 

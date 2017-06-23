@@ -7,7 +7,10 @@ class Logger {
     public function __construct($filename=null, $lineseparator=null) {
         $this->logfilename = $filename;
         if ($this->logfilename == null){
-            $this->logfilename = 'logs/' . debug_backtrace()[1]['function'] . '.log';
+            $debug_backtrace = debug_backtrace();
+            $first_entry = $debug_backtrace[1];
+            $function_name = $first_entry['function'];
+            $this->logfilename = 'logs/' . $function_name . '.log';
         }
         $this->linenumber = 0;
         $this->lastlineprinted = '';
