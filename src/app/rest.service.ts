@@ -5,8 +5,8 @@ import 'rxjs/add/operator/map';
 
 @Injectable()
 export class RestService {
-  hostServerUrl: string = "http://localhost:9001/rest.api.php/"
-//   hostServerUrl = "services/rest.api.php/"
+//   hostServerUrl: string = "http://localhost:9001/rest.api.php/"
+  hostServerUrl = "services/rest.api.php/"
 
   constructor(private http: Http) { }
 
@@ -28,6 +28,13 @@ export class RestService {
       let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
       let options = new RequestOptions({ headers: headers });
       let url = this.hostServerUrl + 'saveobject/' + className + "/";
+      return this.http.post(url, objectToSave, options)
+        .map( (res: Response) =>  res.json() )
+  }
+  saveProduct(objectToSave:any): Observable<any>{
+      let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
+      let options = new RequestOptions({ headers: headers });
+      let url = this.hostServerUrl + 'saveproduct/';
       return this.http.post(url, objectToSave, options)
         .map( (res: Response) =>  res.json() )
   }
@@ -66,8 +73,16 @@ export class RestService {
       return this.http.get(this.hostServerUrl + 'getusernames/')
       .map( (res: Response) =>  res.json() )
   }
-  getOrdersByVendor(userid:Number): Observable<any>{
-      return this.http.get(this.hostServerUrl + 'getordersbyvendor/' + userid + '/')
+  getOrdersByVendor(userid:Number, statusid:Number): Observable<any>{
+      return this.http.get(this.hostServerUrl + 'getordersbyvendor/' + userid + '/' + statusid + '/')
+      .map( (res: Response) =>  res.json() )
+  }
+  getCloseCancelOrdersByVendor(userid:Number): Observable<any>{
+      return this.http.get(this.hostServerUrl + 'getclosecancelordersbyvendor/' + userid + '/')
+      .map( (res: Response) =>  res.json() )
+  }
+  getSelectedOrderDetails(orderid:Number): Observable<any>{
+      return this.http.get(this.hostServerUrl + 'getorderdetails/' + orderid + '/')
       .map( (res: Response) =>  res.json() )
   }
 

@@ -7,6 +7,9 @@ import { ComponentBase } from './../app.component-base';
   styleUrls: ['./customer-order.component.css']
 })
 export class CustomerOrderComponent extends ComponentBase implements OnInit {
+  private orderStatuses:any;
+  private currentStatusName:string;
+
   @ViewChild('cannotCreateOrder') private cannotCreateOrderModal
   // Mostly we use ngOnInit for all the initialization/declaration and avoid stuff to work in the constructor.
   // The constructor should only be used to initialize class members but shouldn't do actual "work".
@@ -14,22 +17,70 @@ export class CustomerOrderComponent extends ComponentBase implements OnInit {
   ngOnInit() {
     this.componentName = 'customerorder';
     this.getTracks();
+    this.getOrderStatuses();
+    this.currentStatusName = this.appuserService.DefaultOrderStatusName;
   }
   getTracks(){
-    this.restService.getOrdersByVendor(this.appuserService.UserId)
+    this.viewOrdersByStatus(this.appuserService.DefaultOrderStatusId);
+  }
+  getOrderStatuses(){
+    this.restService.getObjectCollection('orderstatus')
     .subscribe(retval =>{
-      this.tracks = retval.items;
+      this.orderStatuses = retval.items;
     });        
+    
   }
   createTrack(){
       // this.createvendor = true;
       this.modalService.open(this.cannotCreateOrderModal);
   }
   selectTrack(track) {
-      // interestingly should this get the data for a selected track from the list of tracks or should it make another rest call?
-      this.selectedTrack = track;
+    this.restService.getSelectedOrderDetails(track.id)
+    .subscribe(retval =>{
+      this.selectedTrack = retval;
       this.setDefaultFocus();
+    });        
+      
   }
-  
-  
+  setOrderStatus(argInfo){
+    let order = argInfo.customerOrder;
+    let customerorder = {
+      id: order.id,
+      vendorid: order.vendorid,
+      customerid: order.customerid,
+      statusid: order.statusid,
+      updatedate_ts: order.updatedate_ts,
+      orderdate_ts: order.orderdate_ts
+    }
+    this.tracksavestatus = "Saving";
+    this.modalService.open(this.saveProgressModal);
+    this.restService.saveObject("customerorder",customerorder)
+    .subscribe(retval =>{
+        this.restService.getOrdersByVendor(this.appuserService.UserId, argInfo.currentStatusId)
+        .subscribe(retval =>{
+          this.tracks = retval.items;
+          this.tracksavestatus = "Done";
+        });
+    });
+  }  
+  viewOrdersByStatus(orderStatusId){
+        let tracks = this.appdataService.getDataByModule(this.componentName);
+        if (tracks === undefined){
+          this.restService.getOrdersByVendor(this.appuserService.UserId, orderStatusId)
+          .subscribe(retval =>{
+            this.tracks = retval.items;
+            if (this.orderStatuses){
+              this.orderStatuses.forEach(orderStatus => {
+                if (orderStatus.id == orderStatusId){
+                  this.currentStatusName = orderStatus.name;
+                }
+              });
+            }
+          });
+        } else {
+            this.tracks = tracks;
+        }
+
+
+  }
 }

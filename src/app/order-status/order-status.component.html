@@ -2,48 +2,58 @@
   <app-page-loading *ngIf="stillLoading"></app-page-loading>
   <div class="row">
     <div class="col-4">
-      <app-railroad trackTitle="Drug type" [tracks]="tracks"
+      <app-railroad trackTitle="Order status" [tracks]="tracks"
             (refreshTracks)="getTracks()"
             (selectTrack)="selectTrack($event)"
             (emtDeleteTrack)="deleteTrack($event)"
-            (createTrack)="createTrack()" ></app-railroad>
+            (createTrack)="createTrack()"
+             ></app-railroad>
     </div>
     <div class="col-8">
-        <form #drugtypeForm="ngForm" (ngSubmit)="saveTrack()" *ngIf="selectedTrack">
+        <form #orderstatusForm="ngForm" (ngSubmit)="saveTrack()" *ngIf="selectedTrack">
             <div class="form-group">
-                <label for="drugtypeName">Drug type name</label>
-                <input type="text" class="form-control" id="drugtypeName"
-                        aria-describedby="drugtypeNamelHelp"
-                        placeholder="Drug type name"
+                <label for="statusName">Status name</label>
+                <input type="text" class="form-control" id="statusName"
+                        aria-describedby="statusNameHelp"
+                        placeholder="Status name"
                         name="name"
                         [(ngModel)]="selectedTrack.name"
                         #defaultFormElement
                         required >
-                <small id="drugtypeNamelHelp" class="form-text text-muted">Enter the name of a new drug type</small>
+                <small id="statusNameHelp" class="form-text text-muted">Enter the name of a new Order status</small>
             </div>
             <div class="form-group">
-                <label for="drugtypeDescription">Description</label>
-                <textarea class="form-control" id="drugtypeDescription" rows="2"
-                aria-describedby="drugtypeDescriptionlHelp"
-                placeholder="Drug type description"
+              <label class="custom-control custom-checkbox">
+                <input name="defaultstatus_bool" type="checkbox" class="custom-control-input" [(ngModel)]="selectedTrack.defaultstatus_bool">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">Set as default</span>
+              </label>            
+            </div>
+            <div class="form-group">
+                <label for="statusDescription">Description</label>
+                <textarea class="form-control" id="statusDescription" rows="2"
+                aria-describedby="statusDescriptionlHelp"
+                placeholder="Status description"
                 name="description"
                 [(ngModel)]="selectedTrack.description" ></textarea>
-                <small id="drugtypeDescriptionlHelp" class="form-text text-muted">Enter a brief description for the drug type</small>
+                <small id="statusDescriptionlHelp" class="form-text text-muted">Enter a brief description for the Order status</small>
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
         <div *ngIf="this.tracks!==undefined && this.tracks.length>0 && !this.selectedTrack">
-            <app-notrackselected noTracks="0" trackTitle="Drug type" (createTrack)="createTrack()"></app-notrackselected>
+            <app-notrackselected noTracks="0" trackTitle="Status" (createTrack)="createTrack()"></app-notrackselected>
         </div>
     </div>
   </div><!-- track row -->
   <div class="row" *ngIf="this.tracks!==undefined && this.tracks.length===0 && !this.selectedTrack">
       <div class="col-12">
-        <app-notrackselected noTracks="1" trackTitle="Drug type" (createTrack)="createTrack()"></app-notrackselected>
+        <app-notrackselected noTracks="1" trackTitle="Status" (createTrack)="createTrack()"></app-notrackselected>
       </div>
   </div>
 </div>
 
+<!--TODO: Is there a way to put this into another file and then reference it.
+Right now we have to put this into each of the object HTML files -->
 <template #cannotDelete let-c="close" let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title">Cannot Delete</h4>
@@ -58,10 +68,9 @@
     <button type="button" class="btn btn-secondary" (click)="c('Close click')">OK</button>
   </div>
 </template>
-
 <template #saveprogress let-c="close" let-d="dismiss">
   <div class="modal-header">
-    <h4 class="modal-title">Saving Drug type</h4>
+    <h4 class="modal-title">Saving Status</h4>
     <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -73,3 +82,4 @@
     <button type="button" [disabled]="tracksavestatus==='Saving'" class="btn btn-secondary" (click)="c('Close click')">OK</button>
   </div>
 </template>
+

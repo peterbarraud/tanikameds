@@ -1,45 +1,65 @@
 <div class="container-fluid">
+  <app-page-loading *ngIf="stillLoading"></app-page-loading>
   <div class="row">
     <div class="col-4">
-      <app-railroad trackTitle="Ailment" [tracks]="tracks"
+      <app-order-rail-road trackTitle="Order" [tracks]="tracks"
+            [orderStatuses]="orderStatuses"
+            currentStatusId="{{appuserService.DefaultOrderStatusId}}"
             (refreshTracks)="getTracks()"
             (selectTrack)="selectTrack($event)"
-            (emtDeleteTrack)="deleteTrack($event)"
+            (onSetOrderStatus)="setOrderStatus($event)"
             (createTrack)="createTrack()"
-             ></app-railroad>
+            (onViewOrderByStatus)="viewOrdersByStatus($event)"
+             ></app-order-rail-road>
     </div>
-    <div class="col-8">
-        <form #ailmentForm="ngForm" (ngSubmit)="saveTrack()" *ngIf="selectedTrack">
-            <div class="form-group">
-                <label for="ailmentName">Ailment name</label>
-                <input type="text" class="form-control" id="ailmentName"
-                        aria-describedby="ailmentNamelHelp"
-                        placeholder="Ailment name"
-                        name="name"
-                        [(ngModel)]="selectedTrack.name"
-                        #defaultFormElement
-                        required >
-                <small id="ailmentNamelHelp" class="form-text text-muted">Enter the name of a new ailment</small>
-            </div>
-            <div class="form-group">
-                <label for="ailmentDescription">Description</label>
-                <textarea class="form-control" id="ailmentDescription" rows="2"
-                aria-describedby="ailmentDescriptionlHelp"
-                placeholder="Ailment description"
-                name="description"
-                [(ngModel)]="selectedTrack.description" ></textarea>
-                <small id="ailmentDescriptionlHelp" class="form-text text-muted">Enter a brief description for the ailment</small>
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        </form>
-        <div *ngIf="this.tracks!==undefined && this.tracks.length>0 && !this.selectedTrack">
-            <app-notrackselected noTracks="0" trackTitle="Ailment" (createTrack)="createTrack()"></app-notrackselected>
+    <div class="col-8" *ngIf="selectedTrack">
+        <div>
+        <h3>{{selectedTrack.customer.name}}</h3>
+        <p>{{selectedTrack.customer.address1}}</p>
+        <p>{{selectedTrack.customer.address2}}</p>
+        <p>{{selectedTrack.customer.address3}}</p>
+        <p>Mobile: {{selectedTrack.customer.mobile}}</p>
+        <p>Email: {{selectedTrack.customer.email}}</p>
+        <p>Date of order: {{selectedTrack.customerorder.orderdate_ts}}</p>
         </div>
+
+        <table class="table table-bordered">
+          <thead class="thead-inverse">
+            <tr>
+              <th>#</th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let orderitem of selectedTrack.orderitems.items; let i = index;">
+              <th scope="row">{{i+1}}</th>
+              <td>{{orderitem.product.name}}</td>
+              <td>{{orderitem.price}}</td>
+              <td>{{orderitem.quantity}}</td>
+              <td>{{orderitem.amount}}</td>
+            </tr>
+            <tr class="table-success">
+              <th scope="row" colspan="3">Total</th>
+              <!--<td>{{totalQuantity}}</td>-->
+              <td>{{selectedTrack.orderitems.totalquantity}}</td>
+              <!--<td>{{totalAmount}}</td>-->
+              <td>{{selectedTrack.orderitems.totalamount}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+    </div>
+
+    <div *ngIf="this.tracks!==undefined && this.tracks.length>0 && !this.selectedTrack">
+        <app-no-order-selected noTracks="0" trackTitle="Order" currentStatusName="{{currentStatusName}}"></app-no-order-selected>
     </div>
   </div><!-- track row -->
   <div class="row" *ngIf="this.tracks!==undefined && this.tracks.length===0 && !this.selectedTrack">
       <div class="col-12">
-        <app-notrackselected noTracks="1" trackTitle="Ailment" (createTrack)="createTrack()"></app-notrackselected>
+        <app-no-order-selected noTracks="1" trackTitle="Order" currentStatusName="{{currentStatusName}}"></app-no-order-selected>
       </div>
   </div>
 </div>
@@ -62,7 +82,7 @@ Right now we have to put this into each of the object HTML files -->
 </template>
 <template #saveprogress let-c="close" let-d="dismiss">
   <div class="modal-header">
-    <h4 class="modal-title">Saving Ailment</h4>
+    <h4 class="modal-title">Saving My Order</h4>
     <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>

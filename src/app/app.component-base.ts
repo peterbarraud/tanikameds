@@ -3,7 +3,7 @@ import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 
 import { RestService } from './rest.service';
 import { AppUserService } from './app-user.service';
-
+import { AppDataService } from './app-data.service';
 
 @Component({})
 export class ComponentBase implements AfterViewInit {
@@ -12,6 +12,7 @@ export class ComponentBase implements AfterViewInit {
     componentName:string;
     cannotDeleteObjectName:string;
     protected tracksavestatus:string;
+    protected stillLoading:Boolean;
 
 
     @ViewChild('cannotDelete') cannotDeleteModal: ElementRef;
@@ -27,17 +28,30 @@ export class ComponentBase implements AfterViewInit {
     }
 
     // set the access modifier for the restService member as protected so it can be accessed by it's children
-    constructor(protected restService: RestService, protected modalService: NgbModal, protected appuserService:AppUserService) {}
+    constructor(protected restService: RestService, protected modalService: NgbModal, protected appuserService:AppUserService, protected appdataService: AppDataService) {}
 
     getTracks(){
-     this.restService.getObjectCollection(this.componentName)
-      .subscribe(retval =>{
-        this.tracks = retval.items;
-      });        
+        let tracks = this.appdataService.getDataByModule(this.componentName);
+        if (tracks === undefined){
+            this.stillLoading = true;
+            this.restService.getObjectCollection(this.componentName)
+            .subscribe(retval =>{
+                this.tracks = retval.items;
+                this.appdataService.setDataByModule(this.componentName, retval.items);
+                this.stillLoading = false;
+            });
+        } else {
+            this.tracks = tracks;
+        }
     }
     // refresh the list of ailments
+    // dont call getTracks because we want to force the server hit
     refreshTracks() {
-        this.getTracks();
+        this.restService.getObjectCollection(this.componentName)
+        .subscribe(retval =>{
+            this.tracks = retval.items;
+            this.appdataService.setDataByModule(this.componentName, retval.items);
+        });
     }
     selectTrack(track) {
         // interestingly should this get the data for a selected track from the list of tracks or should it make another rest call?
@@ -51,6 +65,7 @@ export class ComponentBase implements AfterViewInit {
         this.restService.saveObject(this.componentName,this.selectedTrack)
         .subscribe(retval =>{
             this.tracks = retval.objectcollection.items;
+            this.appdataService.setDataByModule(this.componentName, this.tracks);
             this.selectedTrack = retval.saveobject;
             this.tracksavestatus = "Done";
         });

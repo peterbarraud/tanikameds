@@ -1,4 +1,5 @@
 <div class="container-fluid">
+  <app-page-loading *ngIf="stillLoading"></app-page-loading>
   <div class="row">
     <div class="col-4">
       <app-railroad trackTitle="Ailment" [tracks]="tracks"

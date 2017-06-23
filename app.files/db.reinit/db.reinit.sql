@@ -1,5 +1,5 @@
 SET FOREIGN_KEY_CHECKS=0;
-use tanikae1_meds;
+use tanikae1_meds_test;
 drop table if exists appuser;
 create table if not exists appuser (
 	id tinyint unsigned NOT NULL AUTO_INCREMENT,
@@ -184,16 +184,28 @@ create table if not exists customerorder (
 	id int unsigned NOT NULL AUTO_INCREMENT,
 	customerid int unsigned NOT NULL,
 	vendorid tinyint unsigned NOT NULL,
+	statusid tinyint unsigned NOT NULL,
 	-- we are going to use a hard-wired check for TIMESTAMP fields
 	-- to use timestamp fields, you're going to have to append the field name with a _ts (for timestamp)
 	-- TODO: we need to have a check in our dbinit.bat for this
 	-- fail the dbinit if a timestamp field does not have the _ts append
 	-- now the reason we are doing this is when we do the datalayer insert / update. We don't want to touch these fields through code
 	-- MySQL must manage time stamp updates the way it does
-	orderdate_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	updatedate_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	orderdate_ts DATETIME NOT NULL,
+	updatedate_ts DATETIME NOT NULL,
 	FOREIGN KEY (`customerid`) REFERENCES `customer` (`id`),
 	FOREIGN KEY (`vendorid`) REFERENCES `appuser` (`id`),
+	FOREIGN KEY (`statusid`) REFERENCES `orderstatus` (`id`),
+	primary key(id)
+);
+
+drop table if exists orderstatus;
+create table if not exists orderstatus
+(
+	id tinyint unsigned NOT NULL AUTO_INCREMENT,
+	name varchar (50),
+	defaultstatus_bool char(1) DEFAULT NULL,
+	description text,
 	primary key(id)
 );
 

@@ -1,0 +1,29 @@
+<div class="jumbotron" style="margin-top:5px;">
+  <div class="row" *ngIf="noTracks==='0'">
+    <div class="col-1">
+      <div class="left-pointer">&lArr;</div>
+      <div class="left-pointer">&lArr;</div>
+      <div class="left-pointer">&lArr;</div>
+      <div class="left-pointer">&lArr;</div>
+    </div>
+    <div class="col-10">
+      <h3>Working with {{currentStatusName}} {{trackTitlePlural}}</h3>
+      <p class="lead" style="margin-top: 14px;">
+          <span>Click on a <span class="font-weight-bold">{{trackTitle}}</span> on the left rail to view the details.</span>
+          <br>
+          To change the status of an order, click the Status drop-down for the order in the left rail
+      </p>
+    </div>
+  </div>
+  <div class="row" *ngIf="noTracks==='1'">
+    <div class="col-12">
+      <h3>Working with {{currentStatusName}} {{trackTitlePlural}}</h3>
+      <p class="lead">
+          There are currently no {{currentStatusName}} orders in your system.
+          <br>
+          If you have other orders, view these by clicking <span class="font-weight-bold">Order by Status</span> in the left rail
+      </p>
+    </div>
+  </div>
+  
+</div>

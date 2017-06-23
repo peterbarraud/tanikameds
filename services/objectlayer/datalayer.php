@@ -105,9 +105,19 @@ final class DataLayer {
         $field_list = '';
         $value_list = '';
         foreach($object as $field => $value) {
-          if (datalayer::include_field_in_execute_query($field)){
+          if ($field != 'id'){
             $field_list .= $field . ', ';
-            $value_list .= '"' . $value . '", ';
+            if (datalayer::field_is_timestamp($field)){
+              $value_list .= 'now(), ';
+            } else if (datalayer::field_is_boolean($field)){
+              if ($value){
+                $value_list .= '"1", ';  
+              } else {
+                $value_list .= 'null, ';  
+              }
+            } else {
+              $value_list .= '"' . $value . '", ';
+            }
           }
         }
         $field_list = rtrim(rtrim($field_list),',');
@@ -120,13 +130,23 @@ final class DataLayer {
       else {
 		  $set_list = '';
 		  foreach($object as $field => $value) {
-			  if (datalayer::include_field_in_execute_query($field)){
-				  if (isset($value)){
-					  $value = '"' . $value . '"';
-				  }
-				  else {
-					  $value = '""';					  
-				  }
+			  if ($field != 'id'){
+          if (datalayer::field_is_timestamp($field)){
+            $value = 'now()';
+          } else if (datalayer::field_is_boolean($field)){
+              if ($value){
+                $value = '"1"';
+              } else {
+                $value = 'null';
+              }            
+          } else {
+            if (isset($value)){
+              $value = '"' . $value . '"';
+            }
+            else {
+              $value = '""';					  
+            }            
+          }
 				  $set_list .= $field . ' = ' . $value . ', ';
 			  }
 		  }
@@ -152,23 +172,34 @@ final class DataLayer {
     $this->conn->query($execute_sql);
     
   }
-  // The insert or update statements must not include certain fields:
-  // id
-  // timestamp fields that end with _ts
-  private static function include_field_in_execute_query($fieldname){
-    $retval = 1;  // default to include
-    if ($fieldname == 'id'){
-      $retval = 0;
-    } else {
-      $length = strlen('_ts');
-      if ($length == 0) {
-          $retval = 0;
-      } else { 
-        $retval = substr($fieldname, -$length) === '_ts' ? 0 : 1;
-      }
+  // We need to force NULL value in timestamp fields
+  // but the system mandates that timestamp fields must end with _ts
+  private static function field_is_timestamp($fieldname){
+    $retval = 1;  // default to 
+    $length = strlen('_ts');
+    if ($length == 0) {
+        $retval = 1;
+    } else { 
+      $retval = substr($fieldname, -$length) === '_ts' ? 1 : 0;
     }
-    return $retval;
-    
+    return $retval;    
+  }
+  // this is how the system will handle boolean values
+  // the table field must be a char(1) type
+  // true = ''
+  // false = NULL
+  // example:
+  //  defaultstatus_bool char(1) DEFAULT NULL,
+  // but the system mandates that boolean fields must end with _bool
+  private static function field_is_boolean($fieldname){
+    $retval = 1;  // default to 
+    $length = strlen('_bool');
+    if ($length == 0) {
+        $retval = 1;
+    } else { 
+      $retval = substr($fieldname, -$length) === '_bool' ? 1 : 0;
+    }
+    return $retval;    
   }
 }
     

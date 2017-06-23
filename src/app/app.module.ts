@@ -31,6 +31,7 @@ import { AdminUserComponent } from './admin-user/admin-user.component';
 // custom services
 import { RestService } from './rest.service';
 import { AppUserService } from './app-user.service';
+import { AppDataService } from './app-data.service';
 
 import { NoProductSelectedComponent } from './no-product-selected/no-product-selected.component';
 
@@ -39,6 +40,11 @@ import { ValorTableComponent } from './valor-table/valor-table.component';
 import { RegistrationFormComponent } from './registration-form/registration-form.component';
 import { VendorComponent } from './vendor/vendor.component';
 import { CustomerOrderComponent } from './customer-order/customer-order.component';
+import { OrderRailRoadComponent } from './order-rail-road/order-rail-road.component';
+import { OrderStatusComponent } from './order-status/order-status.component';
+import { FilterOrderStatusPipe } from './filter-order-status.pipe';
+import { NoOrderSelectedComponent } from './no-order-selected/no-order-selected.component';
+import { PageLoadingComponent } from './page-loading/page-loading.component';
 
 @NgModule({
   declarations: [
@@ -63,6 +69,11 @@ import { CustomerOrderComponent } from './customer-order/customer-order.componen
     RegistrationFormComponent,
     VendorComponent,
     CustomerOrderComponent,
+    OrderRailRoadComponent,
+    OrderStatusComponent,
+    FilterOrderStatusPipe,
+    NoOrderSelectedComponent,
+    PageLoadingComponent,
   ],
   imports: [
     BrowserModule,
@@ -122,6 +133,10 @@ import { CustomerOrderComponent } from './customer-order/customer-order.componen
         path: 'customerorder', 
         component: CustomerOrderComponent,
       },
+      {
+        path: 'orderstatus', 
+        component: OrderStatusComponent,
+      },
     ]
     )
   ],
@@ -129,7 +144,7 @@ import { CustomerOrderComponent } from './customer-order/customer-order.componen
     RestService,
     AppUserService,
     PaginationConfig,
-    
+    AppDataService    
   ],
   bootstrap: [AppComponent]
 })

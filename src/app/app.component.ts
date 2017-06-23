@@ -32,13 +32,15 @@ export class AppComponent implements OnInit {
   }
 
   navClass(route){
-    let thisClass = {
-      "nav-link": true,
-      "nav-item": true,
-      "nav-item-active": false,
+    let thisClass = [
+      'btn', 'btn-sm', 'align-middle'
+    ];
+    if ("/" + route === this.router.url) {
+      thisClass.push('disabled')
+      thisClass.push('btn-primary')
+    } else {
+      thisClass.push('btn-outline-primary')
     }
-    if ("/" + route === this.router.url)
-      thisClass["nav-item-active"] = true;
     return thisClass;
   }
 }

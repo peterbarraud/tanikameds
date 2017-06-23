@@ -9,7 +9,7 @@
 	//this ensures that a single connection is opened for the entire duration of the API but no more
 	//we can then also (brilliant, this one) make full use of db transactions - we can do a full commit / rollback of everything that happened for the duration of the API
 
-    require_once('logger.php');
+    // require_once('logger.php');
 
 	// create a test rest to try out stuff before we push it through
 	$app->get('/justtotest/', 'justtotest');
@@ -127,7 +127,6 @@
 
 	$app->post('/saveproducts/:username/:password/', 'saveproducts');
 	function saveproducts($username, $password){
-		$logger = new Logger();
 		$validated_user_info = validate_user($username, $password);
 		$retval = array();
 		if ($validated_user_info['invaliduser'] == 0){
@@ -163,7 +162,6 @@
 							$product->id = null;
 							$product->description = null;
 							$product->vendorid = $validated_user_info['user']->id;
-							$logger->println('insert / update');
 							$product->Save();
 							array_push($added_prods, $product->name);
 						}
@@ -195,43 +193,84 @@
 		}
 		echo json_encode($retval);
 	}
-	
+
+	$app->post('/saveproduct/', 'saveproduct');
+	function saveproduct(){
+		$app = new Slim();
+		$retval = array();
+		$jsonobject = json_decode($app->request()->getBody());
+		require_once('objectlayer/vendorproductpricecollection.php');
+		$vendorproductpricecollection = new vendorproductpricecollection(array('vendorid'=>$jsonobject->vendorid, 'productid'=>$jsonobject->id));
+		$vendorproductprice = $vendorproductpricecollection->items[0];
+		$vendorproductprice->price = $jsonobject->productprice;
+		$vendorproductprice->Save();
+		$retval['status'] = 'done';
+		allow_cross_domain_calls();
+		echo json_encode($retval);
+		
+	}
+
+	// rest APIs should be thin. this code should go into a class - probably the customerorder class
+	// interestingly, it should not go into the save method
+	// HEY, HEY, HEY, can we make the base class methods final. I think we should
+	// then use the design practice of decorating the classes with methods that we want to add
+	// But let's leave all this for now. and come back here another day	
 	$app->post('/placeorder/', 'placeorder');
 	function placeorder(){
+		require_once('objectlayer/customerproductorder.php');
+		require_once('objectlayer/customer.php');
+		require_once('objectlayer/customerorder.php');
+		require_once('objectlayer/orderstatuscollection.php');
 		$app = new Slim();
 		$order_json = json_decode($app->request()->getBody());
-		$logger = new Logger();
-		require_once('objectlayer/customer.php');
 		$customer = GetObjectForJSON($order_json->customer, 'customer');
 		$customer->Save();
-		require_once('objectlayer/customerorder.php');
 		$customerorder = new customerorder();
 		$customerorder->customerid = $customer->id;
 		// TODO
 		// MASSIVE: we need to get the vendor from the front-end
 		$customerorder->vendorid = 1;
+		// get the default order status id
+		$orderstatuscollection = new orderstatuscollection(array('defaultstatus_bool'=>'1'));
+		$customerorder->statusid = $orderstatuscollection->items[0]->id;
 		$customerorder->Save();
-		require_once('objectlayer/customerproductorder.php');
 		foreach ($order_json->cart as $cartitem){
 			$customerproductorder = new customerproductorder();
 			$customerproductorder->customerorderid = $customerorder->id;
 			$customerproductorder->productid = $cartitem->productid;
 			$customerproductorder->quantity = $cartitem->quantity;
-			$logger->println($cartitem->productid . ': ' . $cartitem->quantity);
 			$customerproductorder->Save();
 		}
 		allow_cross_domain_calls();
 		echo json_encode($order_json);
 	}
 	
-	$app->get('/getordersbyvendor/:vendorid/', 'getordersbyvendor');
-	function getordersbyvendor($vendorid) {
+	$app->get('/getordersbyvendor/:vendorid/:statusid/', 'getdefaultordersbyvendor');
+	function getdefaultordersbyvendor($vendorid, $statusid) {
 		require_once('objectlayer/customerordercollection.php');
-		$customerordercollection = new customerordercollection(array("vendorid" => $vendorid));
+		$customerordercollection = new customerordercollection(array("vendorid" => $vendorid, "statusid" => $statusid), 'orderdate_ts', 'desc');
 		$customerordercollection->AddCustomerDetails();
 		allow_cross_domain_calls();
 		echo json_encode($customerordercollection);
 	}
+	
+	$app->get('/getclosecancelordersbyvendor/:vendorid/', 'getclosecancelordersbyvendor');
+	function getclosecancelordersbyvendor($vendorid) {
+		require_once('objectlayer/customerordercollection.php');
+		$customerordercollection = new customerordercollection(array("vendorid" => $vendorid), 'orderdate_ts', 'desc');
+		$unsetcounter = 0;
+		$unsetitems = array();
+		foreach ($customerordercollection->items as $customerorder){
+			if($customerorder->status != 'c' && $customerorder->status != 'x'){
+				unset($customerordercollection->items[$unsetcounter]);
+			}
+			$unsetcounter += 1;
+		}
+		$customerordercollection->AddCustomerDetails();
+		allow_cross_domain_calls();
+		echo json_encode($customerordercollection);
+	}
+	
 	$app->get('/getorderdetails/:customerorderid/', 'getorderdetails');
 	function getorderdetails($customerorderid) {
 		// TODO: Which is better
@@ -249,14 +288,21 @@
 		$retval['customerorder'] = $customerorder;
 		$customer = new customer($customerorder->customerid);
 		$retval['customer'] = $customer;
-		$customerproductordercollection = new customerproductordercollection(["customerorderid" => $customerorderid]);
+		$customerproductordercollection = new customerproductordercollection(array("customerorderid" => $customerorderid));
+		$totalquantity = 0;
+		$totalamount = 0;
 		foreach ($customerproductordercollection->items as $customerproductorder){
-			$vendorproductpricecollection = new vendorproductpricecollection(["vendorid" => $customerorder->vendorid, "productid" => $customerproductorder->productid]);
+			$vendorproductpricecollection = new vendorproductpricecollection(array("vendorid" => $customerorder->vendorid, "productid" => $customerproductorder->productid));
 			$vendorproductprice = $vendorproductpricecollection->items[0];
 			$customerproductorder->price = $vendorproductprice->price;
+			$customerproductorder->amount = number_format($vendorproductprice->price * $customerproductorder->quantity, 2);
 			$product = new product($customerproductorder->productid);
 			$customerproductorder->product = $product;
+			$totalquantity += $customerproductorder->quantity;
+			$totalamount += $customerproductorder->amount;
 		}
+		$customerproductordercollection->totalquantity = $totalquantity;
+		$customerproductordercollection->totalamount = number_format($totalamount, 2);
 		$retval['orderitems'] = $customerproductordercollection;
 		allow_cross_domain_calls();
 		echo json_encode($retval);
@@ -377,7 +423,11 @@ function allow_cross_domain_calls() {
     //echo "You have CORS!";
 }
 function validate_user($username, $password){
+	require_once('logger.php');
+	$logger = new Logger();
+	$logger->println(0);
 	require_once('objectlayer/appusercollection.php');
+	require_once('objectlayer/orderstatuscollection.php');
 	$filter = array();
 	$filter['username'] = $username;
 	$filter['password'] = $password;
@@ -387,6 +437,14 @@ function validate_user($username, $password){
 	if ($appusers->length == 1){
 		$retval['user'] = $appusers->items[0];
 		$retval['invaliduser'] = 0;
+		// lets also get the default order status to display orders for this vendor
+		$orderstatuscollection = new orderstatuscollection(array('defaultstatus_bool'=>'1'));
+		// make sure you check that a default orderstatus is set
+		if (sizeof($orderstatuscollection->items)){
+			$retval['defaultstatus'] = $orderstatuscollection->items[0];
+		} else {
+			$retval['defaultstatus'] = '';
+		}
 	}
 	else {
 		$retval['invaliduser'] = 1;

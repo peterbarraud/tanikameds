@@ -1,162 +1,69 @@
-<div class="container-fluid">
-  <div class="row" *ngIf="(tracks!==undefined && tracks.length>0) || selectedTrack">
-    <div class="col-4">
-        <app-railroad trackTitle="Product" [tracks]="tracks"
-            (refreshTracks)="getTracks()"
-            (selectTrack)="selectTrack($event)"
-            (emtDeleteTrack)="deleteTrack($event)"
-            (createTrack)="createTrack()" >
-        </app-railroad>
-    </div>
-    <div class="col-8">
-        
-        <form #productForm="ngForm" (ngSubmit)="saveTrack()" (keydown)="keyDownFunction($event)" *ngIf="selectedTrack">
-            <div class="form-group">
-                <label for="productName">Product name</label>
-                <input type="text" class="form-control" id="productName"
-                        aria-describedby="productNameHelp"
-                        placeholder="Product name"
-                        name="name"
-                        #defaultFormElement
-                        [(ngModel)]="selectedTrack.name"
-                        required
-                        >
-                <small id="productNamelHelp" class="form-text text-muted">Enter the name of a new product</small>
-            </div>    
-            <div class="form-group">
-                <label for="productDescription">Description</label>
-                <textarea class="form-control" id="productDescription" rows="2"
-                aria-describedby="productDescriptionlHelp"
-                placeholder="Product description"
-                name="description"
-                [(ngModel)]="selectedTrack.description" 
-                triggers="{{showGuidedHelp}}"
-                [ngbPopover]="descriptionhelpcontent"
-                popoverTitle="Name field"
-                placement="left"
-                container="body"
-                ></textarea>            
-                <small id="productDescriptionlHelp" class="form-text text-muted">Enter a brief description for the product</small>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-6">
-                    <!-- selectedItem implements two-way binding according to Thoughtram:
-                        https://blog.thoughtram.io/angular/2016/10/13/two-way-data-binding-in-angular-2.html
-                    -->
-                    <app-product-item-select [(selectedItem)]="selectedTrack.manufacturername"
-                            itemname="manufacturer"
-                            itemtitle="Manufacturer"
-                            [itemnamelist]="itemnameslists['manufacturer']"
-                            showGuidedHelp="{{showGuidedHelp}}"
-                            helppopupplacement="left" >
-                    </app-product-item-select>
-                </div>
-                <div class="col-6">
-                    <app-product-item-select [(selectedItem)]="selectedTrack.drugtypename"
-                            itemname="drugtype"
-                            itemtitle="Drug type"
-                            [itemnamelist]="itemnameslists['drugtype']"
-                            showGuidedHelp="{{showGuidedHelp}}"
-                            helppopupplacement="right" >
-                    </app-product-item-select>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-6">
-                    <app-product-item-select [(selectedItem)]="selectedTrack.ailmentname"
-                            itemname="ailment"
-                            itemtitle="Ailment"
-                            [itemnamelist]="itemnameslists['ailment']"
-                            showGuidedHelp="{{showGuidedHelp}}"
-                            helppopupplacement="left" >
-                    </app-product-item-select>
-                </div>
-                <div class="col-6">
-                    <app-product-item-select [(selectedItem)]="selectedTrack.categoryname"
-                            itemname="category"
-                            itemtitle="Category"
-                            [itemnamelist]="itemnameslists['category']"
-                            showGuidedHelp="{{showGuidedHelp}}"
-                            helppopupplacement="right" >
-                    </app-product-item-select>
-                </div>
-            </div>
-    
-            <div class="form-group row">
-                <div class="col-6">
-                    <app-product-item-select [(selectedItem)]="selectedTrack.producttypename"
-                            itemname="producttype"
-                            itemtitle="Product type"
-                            [itemnamelist]="itemnameslists['producttype']"
-                            showGuidedHelp="{{showGuidedHelp}}"
-                            helppopupplacement="left" >
-                    </app-product-item-select>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-6">
-                    <app-multi-product-item-select [(selectedItem)]="selectedTrack.constituentnames"
-                            itemname="constituent"
-                            itemtitle="Constituent"
-                            [itemnamelist]="itemnameslists['constituent']"
-                            helppopupplacement="left" >
-                    </app-multi-product-item-select>
-                </div>
-                <div class="col-6">
-                    <app-multi-product-item-select [(selectedItem)]="selectedTrack.subconstituentnames"
-                            itemname="subconstituent"
-                            itemtitle="Sub-Constituent"
-                            [itemnamelist]="itemnameslists['subconstituent']"
-                            helppopupplacement="right" >
-                    </app-multi-product-item-select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="productName">Price</label>
-                <input type="text" class="form-control" id="productPrice"
-                        aria-describedby="productPriceHelp"
-                        placeholder="Product price"
-                        name="price"
-                        #defaultFormElement
-                        [(ngModel)]="selectedTrack.productprice"
-                        required
-                        >
-                <small id="productNamelHelp" class="form-text text-muted">Enter your vendor price for the product</small>
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        </form>
-        <div *ngIf="this.tracks!==undefined && this.tracks.length>0 && !this.selectedTrack">
-            <app-no-product-selected noProducts="0" (createTrack)="createTrack(true)"></app-no-product-selected>
-        </div>
-    </div>
-  </div><!-- track row -->
-  <div class="row" *ngIf="this.tracks!==undefined && this.tracks.length===0 && !this.selectedTrack">
-      <div class="col-12">
-        <app-no-product-selected noProducts="1" (createTrack)="createTrack(true)"></app-no-product-selected>
-      </div>
-  </div>
-</div>
-
-<!--<app-valor-table [tableData]="tracks" (clickcell)="onClickTableCell($event)"></app-valor-table>-->
-
-<!--Help tips for the Product guided help-->
-<template #namehelpcontent><p class="help-para">Enter a product name (<span class="text-danger">mandatory</span>) and press the <span class="font-weight-bold">Tab</span> key to move to the next field.</p></template>
-<template #descriptionhelpcontent><p class="help-para">Enter a product description (<span class="text-danger">optional</span>) and press the <span class="font-weight-bold">Tab</span> key to move to the next field.</p></template>
-
-<template #saveprogress let-c="close" let-d="dismiss">
+<div style="top:150px;left:300px;position:absolute;" *ngIf="getDetailsInProgress"><span class="badge badge-default" style="font-size:48px">Getting details. Please wait...</span></div>
+<app-page-loading *ngIf="stillLoading"></app-page-loading>
+<app-valor-table [tableData]="tracks" (clickcell)="onClickTableCell($event)"></app-valor-table>
+<template ngbModalContainer></template>
+<template #vieweditproductModal let-c="close" let-d="dismiss">
   <div class="modal-header">
-    <h4 class="modal-title">Saving Product</h4>
+    <h4 class="modal-title">View / Edit product {{selectedTrack.name}}</h4>
     <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <p>{{tracksavestatus}}</p>
+    <div style="top:200px;left:100px;position:absolute;" *ngIf="saveProductInProgress"><h1><span class="badge badge-default">Saving. Please wait...</span></h1></div>
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>Name</td>
+          <td class="font-weight-bold">{{selectedTrack.name}}</td>
+        </tr>
+        <tr>
+          <td>Price</td>
+          <td class="font-weight-bold"><input type=text #productprice value={{selectedTrack.productprice}}></td>
+        </tr>
+        <tr>
+          <td>Ailment</td>
+          <td class="font-weight-bold">{{selectedTrack.ailmentname}}</td>
+        </tr>
+        <tr>
+          <td>Category</td>
+          <td class="font-weight-bold">{{selectedTrack.categoryname}}</td>
+        </tr>
+        <tr>
+          <td>Drug type</td>
+          <td class="font-weight-bold">{{selectedTrack.drugtypename}}</td>
+        </tr>
+        <tr>
+          <td>Manufacturer</td>
+          <td class="font-weight-bold">{{selectedTrack.manufacturername}}</td>
+        </tr>
+        <tr>
+          <td>Product type</td>
+          <td class="font-weight-bold">{{selectedTrack.producttypename}}</td>
+        </tr>
+        <tr>
+          <td>Constituents</td>
+          <td>
+            <ul *ngIf="selectedTrack.constituentnames.length">
+              <li *ngFor="let constituentname of selectedTrack.constituentnames" class="font-weight-bold">{{constituentname}}</li>
+            </ul>
+            <p *ngIf="!selectedTrack.constituentnames.length" class="font-weight-bold font-italic">None</p>
+          </td>
+        </tr>
+        <tr>
+          <td>Sub-constituents</td>
+          <td>
+            <ul *ngIf="selectedTrack.subconstituentnames.length">
+              <li *ngFor="let subconstituentname of selectedTrack.subconstituentnames" class="font-weight-bold">{{subconstituentname}}</li>
+            </ul>
+            <p *ngIf="!selectedTrack.subconstituentnames.length" class="font-weight-bold font-italic">None</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>    
   </div>
   <div class="modal-footer">
-    <button type="button" [disabled]="tracksavestatus==='Saving'" class="btn btn-secondary" (click)="c('Close click')">OK</button>
+    <button type="button" class="btn btn-primary" (click)="saveproductchanges(productprice)" [disabled]="saveProductInProgress">Save changes</button>
+    <button type="button" class="btn btn-secondary" (click)="c('Close click')" [disabled]="saveProductInProgress">Close</button>
   </div>
 </template>

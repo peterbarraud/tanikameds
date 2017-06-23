@@ -10,6 +10,8 @@ export class AppUserService {
   private _badlogin:Boolean = null;
   private _userid:Number = -1;
   private _isAdminUser:Boolean = false;
+  private _defaultOrderStatusId:Number = -1;
+  private _defaultOrderStatusName:string = '';
   constructor(private restService: RestService) { }
 
   ValidateUser(username:string, password:string, router){
@@ -25,6 +27,8 @@ export class AppUserService {
           this._badlogin = false;
           this._userid = parseInt(retval.user.id);
           this._isAdminUser = retval.user.userclassname === "admin";
+          this._defaultOrderStatusId = retval.defaultstatus.id;
+          this._defaultOrderStatusName = retval.defaultstatus.name;
         }
         else {
           this._badlogin = true;
@@ -65,5 +69,11 @@ export class AppUserService {
   }
   get UserId():Number {
     return this._userid;
+  }
+  get DefaultOrderStatusId():Number {
+    return this._defaultOrderStatusId;
+  }
+  get DefaultOrderStatusName():string {
+    return this._defaultOrderStatusName
   }
 }

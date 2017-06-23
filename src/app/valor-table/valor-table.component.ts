@@ -9,11 +9,7 @@ export class ValorTableComponent implements OnChanges {
   public rows:Array<any> = [];
   public columns:Array<any> = [
     {title: 'Name', name: 'name', filtering:{filterString: '', placeholder: 'Filter by name'}},
-    {title: 'Position', name: 'position', sort: false, filtering: {filterString: '', placeholder: 'Filter by position'} },
-    {title: 'Office', className: ['office-header', 'text-success'], name: 'office', sort: 'asc'},
-    {title: 'Extn.', name: 'ext', sort: '', filtering: {filterString: '', placeholder: 'Filter by extn.'}},
-    {title: 'Start date', className: 'text-warning', name: 'startDate'},
-    {title: 'Salary ($)', name: 'salary'}
+    {title: 'Keyword', name: 'keyword', filtering:{filterString: '', placeholder: 'Filter by keyword'}}
   ];
   public page:number = 1;
   public itemsPerPage:number = 10;

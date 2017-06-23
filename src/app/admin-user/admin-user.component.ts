@@ -81,9 +81,14 @@ export class AdminUserComponent extends ComponentBase implements OnInit {
       else {
         this.tracksavestatus = "Saving";
         this.modalService.open(this.saveProgressModal);
+        this.selectedTrack.userclassname = 'admin';
+        this.selectedTrack.canaddproduct = 1;
+        this.selectedTrack.candeleteproduct = 1;
+        this.selectedTrack.canmanageuser = 1;
         this.restService.saveObject(this.componentName,this.selectedTrack)
         .subscribe(retval =>{
             this.tracks = retval.objectcollection.items;
+            this.appdataService.setDataByModule(this.componentName, this.tracks);
             this.selectedTrack = retval.saveobject;
             this._changepassword = false;
             this._isnewuser = false;
